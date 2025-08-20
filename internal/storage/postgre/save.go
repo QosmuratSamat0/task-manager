@@ -9,11 +9,11 @@ import (
 	"time"
 )
 
-func (s *Storage) SaveUser(name string, email string) (int64, error) {
+func (s *Storage) SaveUser(username string, email string) (int64, error) {
 	const op = "storage.postgre.SaveUser"
 
 	var id int64
-	err := s.db.QueryRow(context.Background(), "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id", name, email).Scan(&id)
+	err := s.db.QueryRow(context.Background(), "INSERT INTO users (user_name, email) VALUES ($1, $2) RETURNING id", username, email).Scan(&id)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {

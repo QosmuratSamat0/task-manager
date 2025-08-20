@@ -34,7 +34,7 @@ type TaskSaver interface {
 
 func NewTask(log *slog.Logger, taskSaver TaskSaver) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.save.task.New"
+		const op = "handlers.save.NewTask"
 
 		log = log.With(
 			"op", op,

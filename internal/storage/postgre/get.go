@@ -16,8 +16,8 @@ func (s *Storage) User(email string) (model.User, error) {
 
 	err := s.db.QueryRow(context.Background(),
 		`
-			SELECT id, name, email, created_at FROM users WHERE email = $1
-			`, email).Scan(&resUser.Id, &resUser.Name, &resUser.Email, &resUser.CreatedAt)
+			SELECT id, user_name, email, created_at FROM users WHERE email = $1
+			`, email).Scan(&resUser.Id, &resUser.UserName, &resUser.Email, &resUser.CreatedAt)
 
 	if errors.Is(err, pgx.ErrNoRows) {
 		return model.User{}, fmt.Errorf("%s: %w", op, storage.ErrNotFound)

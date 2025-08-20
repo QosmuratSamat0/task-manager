@@ -15,7 +15,7 @@ import (
 )
 
 type RequestUser struct {
-	Name  string `json:"name"`
+	Name  string `json:"name,omitempty"`
 	Email string `json:"email" validate:"required,email"`
 }
 
@@ -24,13 +24,14 @@ type ResponseUser struct {
 	Email string `json:"email"`
 }
 
+//go:generate go run github.com/vektra/mockery/v2@latest --name=UserSaver
 type UserSaver interface {
 	SaveUser(name string, email string) (int64, error)
 }
 
 func NewUser(log *slog.Logger, userSaver UserSaver) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.save.user.New"
+		const op = "handlers.save.NewUser"
 
 		log = log.With(
 			"op", op,
