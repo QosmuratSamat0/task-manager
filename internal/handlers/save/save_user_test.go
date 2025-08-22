@@ -17,36 +17,36 @@ import (
 func TestSaveUser(t *testing.T) {
 	cases := []struct {
 		name      string
-		username  string
+		userName  string
 		email     string
 		respError string
 		mockError error
 	}{
 		{
 			name:     "success",
-			username: "user1",
+			userName: "user1",
 			email:    "user1@gmail.com",
 		},
 		{
 			name:     "empty username",
-			username: "",
+			userName: "",
 			email:    "user2@gmail.com",
 		},
 		{
 			name:      "empty email",
-			username:  "user3",
+			userName:  "user3",
 			email:     "",
 			respError: "email can't be empty",
 		},
 		{
 			name:      "Invalid email",
-			username:  "user4",
+			userName:  "user4",
 			email:     "some invalid email",
 			respError: "filed email is not valid email",
 		},
 		{
 			name:      "SaveUser Error",
-			username:  "user5",
+			userName:  "user5",
 			email:     "user5@gmail.com",
 			respError: "save user failed",
 			mockError: errors.New("unexpected error"),
@@ -58,19 +58,20 @@ func TestSaveUser(t *testing.T) {
 
 			userSave := mocks.NewUserSaver(t)
 
-			if tc.respError == "" || tc.mockError == nil {
+			if tc.respError == "" || tc.mockError != nil {
 				userSave.
-					On("SaveUser", tc.username, tc.email).
+					On("SaveUser", tc.userName, tc.email).
 					Return(0, tc.mockError).
 					Once()
 			}
 			log := slog.Default()
 			handler := NewUser(log, userSave)
 
-			inputs := fmt.Sprintf(`"{name":"%s",{email}:"%s"}`, tc.username, tc.email)
+			inputs := fmt.Sprintf(`"{name}":"%s", {email}:"%s"}`, tc.userName, tc.email)
 
-			req, err := http.NewRequest(http.MethodPost, "/", strings.NewReader(inputs))
+			req, err := http.NewRequest(http.MethodPost, "/save", strings.NewReader(inputs))
 			require.NoError(t, err)
+			req.Header.Set("Content-Type", "application/json")
 
 			rr := httptest.NewRecorder()
 			handler.ServeHTTP(rr, req)
