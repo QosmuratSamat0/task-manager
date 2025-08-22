@@ -36,19 +36,19 @@ func TestSaveUser(t *testing.T) {
 			name:      "empty email",
 			userName:  "user3",
 			email:     "",
-			respError: "email can't be empty",
+			respError: "email field is required",
 		},
 		{
 			name:      "Invalid email",
 			userName:  "user4",
-			email:     "some invalid email",
-			respError: "filed email is not valid email",
+			email:     "some invalid email.",
+			respError: "invalid email format",
 		},
 		{
 			name:      "SaveUser Error",
 			userName:  "user5",
 			email:     "user5@gmail.com",
-			respError: "save user failed",
+			respError: "failed to save user",
 			mockError: errors.New("unexpected error"),
 		},
 	}
@@ -61,13 +61,13 @@ func TestSaveUser(t *testing.T) {
 			if tc.respError == "" || tc.mockError != nil {
 				userSave.
 					On("SaveUser", tc.userName, tc.email).
-					Return(0, tc.mockError).
+					Return(int64(0), tc.mockError).
 					Once()
 			}
 			log := slog.Default()
 			handler := NewUser(log, userSave)
 
-			inputs := fmt.Sprintf(`"{name}":"%s", {email}:"%s"}`, tc.userName, tc.email)
+			inputs := fmt.Sprintf(`{"name":"%s", "email":"%s"}`, tc.userName, tc.email)
 
 			req, err := http.NewRequest(http.MethodPost, "/save", strings.NewReader(inputs))
 			require.NoError(t, err)

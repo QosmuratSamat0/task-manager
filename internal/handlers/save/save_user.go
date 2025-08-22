@@ -15,8 +15,8 @@ import (
 )
 
 type RequestUser struct {
-	Name  string `json:"name"`
-	Email string `json:"email" validate:"required,email"`
+	UserName string `json:"name"`
+	Email    string `json:"email" validate:"required,email"`
 }
 
 type ResponseUser struct {
@@ -51,7 +51,7 @@ func NewUser(log *slog.Logger, userSaver UserSaver) http.HandlerFunc {
 		log.Info("request body decoded", slog.Any("request", req))
 
 		if req.Email == "" {
-			log.Error("email field is required", sl.Err(err))
+			log.Error("email field is required")
 
 			render.JSON(w, r, resp.Error("email field is required"))
 
@@ -76,7 +76,7 @@ func NewUser(log *slog.Logger, userSaver UserSaver) http.HandlerFunc {
 			return
 		}
 
-		id, err := userSaver.SaveUser(req.Name, req.Email)
+		id, err := userSaver.SaveUser(req.UserName, req.Email)
 		if err != nil {
 			if errors.Is(err, storage.ErrExists) {
 				log.Error("user already exists", sl.Err(err))
