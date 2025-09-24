@@ -13,6 +13,8 @@ import (
 	"task-manager/internal/storage"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@latest --name=UserGetter
+
 type UserGetter interface {
 	User(email string) (model.User, error)
 }
@@ -26,33 +28,36 @@ func NewUser(log *slog.Logger, userGetter UserGetter) http.HandlerFunc {
 			"request_id", middleware.GetReqID(r.Context()))
 
 		email := chi.URLParam(r, "email")
-		if email == "" {
+        if email == "" {
 			log.Error("email is empty")
 
-			render.JSON(w, r, resp.Error("not found"))
+            render.Status(r, http.StatusBadRequest)
+            render.JSON(w, r, resp.Error("email is empty"))
 
 			return
 		}
 
-		user, err := userGetter.User(email)
-		if errors.Is(err, storage.ErrNotFound) {
-			log.Error("user not found")
+        user, err := userGetter.User(email)
+        if errors.Is(err, storage.ErrNotFound) {
+            log.Error("user not found")
 
-			render.JSON(w, r, resp.Error("not found"))
+            render.Status(r, http.StatusNotFound)
+            render.JSON(w, r, resp.Error("not found"))
 
-			return
-		}
-		if err != nil {
-			log.Error("failed to get user")
+            return
+        }
+        if err != nil {
+            log.Error("failed to get user")
 
-			render.JSON(w, r, resp.Error("internal error"))
+            render.Status(r, http.StatusInternalServerError)
+            render.JSON(w, r, resp.Error("internal error"))
 
-			return
-		}
+            return
+        }
 
-		slog.Info("got user", slog.String("email", user.Email))
+		log.Info("got user", slog.String("email", user.Email))
 
-		render.Status(r, http.StatusOK)
+        render.Status(r, http.StatusOK)
 		render.JSON(w, r, map[string]interface{}{
 			"status": "OK",
 			"data":   user,

@@ -28,6 +28,7 @@ type ResponseTask struct {
 	UserID int64 `json:"user_id"`
 }
 
+//go:generate go run github.com/vektra/mockery/v2@latest --name=TaskSaver
 type TaskSaver interface {
 	SaveTask(userID int64, title, description, status, priority string, deadline time.Time) (int64, error)
 }

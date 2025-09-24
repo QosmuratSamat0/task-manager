@@ -1,21 +1,23 @@
 package main
 
 import (
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
-	"log/slog"
-	"net/http"
-	"os"
-	"task-manager/internal/config"
-	"task-manager/internal/handlers/delete/delete_user"
-	"task-manager/internal/handlers/redirect"
-	"task-manager/internal/handlers/save"
-	"task-manager/internal/lib/logger/sl"
-	"task-manager/internal/storage/postgre"
+    "github.com/go-chi/chi"
+    "github.com/go-chi/chi/middleware"
+    "log/slog"
+    "net/http"
+    "os"
+    "task-manager/internal/config"
+    "task-manager/internal/handlers/delete/delete_task"
+    "task-manager/internal/handlers/delete/delete_user"
+    "task-manager/internal/handlers/redirect"
+    "task-manager/internal/handlers/save"
+    "task-manager/internal/lib/logger/sl"
+    "task-manager/internal/storage/postgre"
 )
 
 const (
 	envLocal = "local"
+	envProd  = "prod"
 )
 
 func main() {
@@ -40,9 +42,14 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
-	router.Post("/", save.NewUser(log, storage))
-	router.Get("/{email}", redirect.NewUser(log, storage))
-	router.Delete("/{email}", delete_user.New(log, storage))
+    router.Post("/", save.NewUser(log, storage))
+    router.Get("/{email}", redirect.NewUser(log, storage))
+    router.Delete("/{email}", delete_user.New(log, storage))
+
+    // Task routes
+    router.Post("/tasks", save.NewTask(log, storage))
+    router.Get("/tasks/{user_id}", redirect.NewTask(log, storage))
+    router.Delete("/tasks/{user_id}", delete_task.New(log, storage))
 
 	log.Info("starting server", slog.String("address", cfg.Address))
 
@@ -56,7 +63,7 @@ func main() {
 	if err := srv.ListenAndServe(); err != nil {
 		log.Error("failed to start server", sl.Err(err))
 	}
-	
+
 }
 
 func setupLogger(env string) *slog.Logger {
@@ -65,6 +72,9 @@ func setupLogger(env string) *slog.Logger {
 	switch env {
 	case envLocal:
 		log = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
+	case envProd:
+		log = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+
 	}
 
 	return log

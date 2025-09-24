@@ -25,15 +25,16 @@ func (s *Storage) SaveUser(username string, email string) (int64, error) {
 	return id, nil
 }
 
-func (s *Storage) SaveTask(userID int, title, description, status, priority string, deadline time.Time) (int64, error) {
+func (s *Storage) SaveTask(userID int64, title, description, status, priority string, deadline time.Time) (int64, error) {
 	const op = "storage.postgre.SaveTask"
 
 	var id int64
 
 	err := s.db.QueryRow(context.Background(),
 		`
-			INSERT INTO tasks (user_id, title, description, status, priority, deadline) VALUES ($1, $2, $3, $4, $5)
-		`, userID, title, description, status, priority, deadline).Scan(&id)
+            INSERT INTO tasks (user_id, title, description, status, priority, deadline)
+            VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
+        `, userID, title, description, status, priority, deadline).Scan(&id)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
