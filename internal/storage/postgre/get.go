@@ -1,12 +1,12 @@
 package postgre
 
 import (
-	"context"
-	"errors"
-	"fmt"
-	"github.com/jackc/pgx"
-	"task-manager/internal/model"
-	"task-manager/internal/storage"
+    "context"
+    "errors"
+    "fmt"
+    "github.com/jackc/pgx/v5"
+    "task-manager/internal/model"
+    "task-manager/internal/storage"
 )
 
 func (s *Storage) User(email string) (model.User, error) {

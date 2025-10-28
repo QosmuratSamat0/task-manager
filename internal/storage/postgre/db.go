@@ -1,9 +1,9 @@
 package postgre
 
 import (
-	"context"
-	"fmt"
-	"github.com/jackc/pgx/v5/pgxpool"
+    "context"
+    "fmt"
+    "github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Storage struct {
@@ -18,5 +18,10 @@ func New(storagePath string) (*Storage, error) {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	return &Storage{db: db}, nil
+    return &Storage{db: db}, nil
+}
+
+// Ping checks database connectivity
+func (s *Storage) Ping(ctx context.Context) error {
+    return s.db.Ping(ctx)
 }

@@ -12,6 +12,8 @@ import (
     "task-manager/internal/lib/logger/sl"
     "task-manager/internal/storage/postgre"
     "net/url"
+    "context"
+    "time"
 )
 
 const (
@@ -42,18 +44,33 @@ func main() {
 	router.Use(middleware.RealIP)
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
-	router.Use(middleware.URLFormat)
+    router.Use(middleware.URLFormat)
 
-    router.Post("/", user.Save(log, storage))
-    router.Get("/{email}", user.Get(log, storage))
-    router.Delete("/{email}", user.Delete(log, storage))
+    // Health endpoint with DB ping
+    router.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
+        ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
+        defer cancel()
+        if err := storage.Ping(ctx); err != nil {
+            http.Error(w, "unhealthy", http.StatusServiceUnavailable)
+            return
+        }
+        w.WriteHeader(http.StatusOK)
+        _, _ = w.Write([]byte("ok"))
+    })
+
+    // User routes under /users to avoid conflicts with root endpoints like /healthz
+    router.Route("/users", func(r chi.Router) {
+        r.Post("/", user.Save(log, storage))
+        r.Get("/{email}", user.Get(log, storage))
+        r.Delete("/{email}", user.Delete(log, storage))
+    })
 
     // Task routes
     router.Post("/tasks", task.Save(log, storage))
     router.Get("/tasks/{user_id}", task.Get(log, storage))
     router.Delete("/tasks/{user_id}", task.Delete(log, storage))
 
-	log.Info("starting server", slog.String("address", cfg.Address))
+    log.Info("starting server", slog.String("address", cfg.Address))
 
 	srv := &http.Server{
 		Addr:         cfg.Address,
