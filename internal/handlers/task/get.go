@@ -1,28 +1,29 @@
-package redirect
+package task
 
 import (
-	"errors"
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/render"
-	"log/slog"
-	"net/http"
-	"strconv"
-	resp "task-manager/internal/lib/response"
-	"task-manager/internal/model"
-	"task-manager/internal/storage"
+    "errors"
+    "github.com/go-chi/chi"
+    "github.com/go-chi/chi/middleware"
+    "github.com/go-chi/render"
+    "log/slog"
+    "net/http"
+    "strconv"
+    resp "task-manager/internal/lib/response"
+    "task-manager/internal/model"
+    "task-manager/internal/storage"
 )
 
 //go:generate go run github.com/vektra/mockery/v2@latest --name=TaskGetter
 type TaskGetter interface {
-	Task(id int) (model.Task, error)
+    Task(id int) (model.Task, error)
 }
 
-func NewTask(log *slog.Logger, taskGetter TaskGetter) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "handlers.redirect.task.New"
+// Get handles retrieving a task by id
+func Get(log *slog.Logger, taskGetter TaskGetter) http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+        const op = "handlers.task.Get"
 
-		log = log.With("op", op, "request_id", middleware.GetReqID(r.Context()))
+        log = log.With("op", op, "request_id", middleware.GetReqID(r.Context()))
 
         userIDstr := chi.URLParam(r, "user_id")
         userID, err := strconv.Atoi(userIDstr)
@@ -43,7 +44,7 @@ func NewTask(log *slog.Logger, taskGetter TaskGetter) http.HandlerFunc {
             return
         }
 
-		task, err := taskGetter.Task(userID)
+        task, err := taskGetter.Task(userID)
         if errors.Is(err, storage.ErrNotFound) {
             log.Error("task not found")
 
@@ -62,14 +63,15 @@ func NewTask(log *slog.Logger, taskGetter TaskGetter) http.HandlerFunc {
             return
         }
 
-		log.Info("got task", "user_id", userID)
+        log.Info("got task", "user_id", userID)
 
-		render.Status(r, http.StatusOK)
+        render.Status(r, http.StatusOK)
 
-		render.JSON(w, r, map[string]interface{}{
-			"status": "ok",
-			"task":   task,
-		})
+        render.JSON(w, r, map[string]interface{}{
+            "status": "ok",
+            "task":   task,
+        })
 
-	}
+    }
 }
+

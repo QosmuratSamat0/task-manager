@@ -1,10 +1,10 @@
 package config
 
 import (
-	"github.com/ilyakaznacheev/cleanenv"
-	"log"
-	"os"
-	"time"
+    "github.com/ilyakaznacheev/cleanenv"
+    "log"
+    "os"
+    "time"
 )
 
 type Config struct {
@@ -14,28 +14,38 @@ type Config struct {
 }
 
 type HTTPServer struct {
-	Address     string        `yaml:"address" env-required:"true"`
-	Timeout     time.Duration `yaml:"timeout" env-default:"4"`
-	IdleTimeout time.Duration `yaml:"idle_timeout" env-default:"60"`
+    Address     string        `yaml:"address" env-required:"true"`
+    Timeout     time.Duration `yaml:"timeout" env-default:"4"`
+    IdleTimeout time.Duration `yaml:"idle_timeout" env-default:"60"`
 }
 
 func MustLoad() *Config {
-	defaultConfigPath := "C:/Users/samat/GolandProjects/task-manager/config/local.yaml"
-	if err := os.Setenv("CONFIG_PATH", defaultConfigPath); err != nil {
-		log.Fatal(err)
-		return nil
-	}
+    // Resolve config path: prefer CONFIG_PATH, fallback to local file
+    configPath := os.Getenv("CONFIG_PATH")
+    if configPath == "" {
+        configPath = "config/local.yaml"
+    }
 
-	if _, err := os.Stat(defaultConfigPath); os.IsNotExist(err) {
-		log.Fatal("Config path does not exist")
-	}
+    if _, err := os.Stat(configPath); os.IsNotExist(err) {
+        log.Fatalf("config path does not exist: %s", configPath)
+    }
 
-	var cfg Config
+    var cfg Config
 
-	err := cleanenv.ReadConfig(defaultConfigPath, &cfg)
-	if err != nil {
-		log.Fatal(err)
-		return nil
-	}
-	return &cfg
+    if err := cleanenv.ReadConfig(configPath, &cfg); err != nil {
+        log.Fatal(err)
+        return nil
+    }
+
+    // Optional overrides from env for containerized deployments
+    if dbURL := os.Getenv("DATABASE_URL"); dbURL != "" {
+        cfg.Database = dbURL
+    }
+    if addr := os.Getenv("HTTP_ADDRESS"); addr != "" {
+        cfg.HTTPServer.Address = addr
+    } else if port := os.Getenv("PORT"); port != "" {
+        cfg.HTTPServer.Address = "0.0.0.0:" + port
+    }
+
+    return &cfg
 }
