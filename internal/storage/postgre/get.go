@@ -15,9 +15,8 @@ func (s *Storage) User(email string) (model.User, error) {
 	var resUser model.User
 
 	err := s.db.QueryRow(context.Background(),
-		`
-			SELECT id, user_name, email, created_at FROM users WHERE email = $1
-			`, email).Scan(&resUser.Id, &resUser.UserName, &resUser.Email, &resUser.CreatedAt)
+		`SELECT id, user_name, email, created_at FROM users WHERE email = $1`,
+        email).Scan(&resUser.Id, &resUser.UserName, &resUser.Email, &resUser.CreatedAt)
 
 	if errors.Is(err, pgx.ErrNoRows) {
 		return model.User{}, fmt.Errorf("%s: %w", op, storage.ErrNotFound)
@@ -31,25 +30,25 @@ func (s *Storage) User(email string) (model.User, error) {
 }
 
 func (s *Storage) Task(id int) (model.Task, error) {
-	const op = "storage.postgre.task"
+    const op = "storage.postgre.task"
 
-	var task model.Task
+    var task model.Task
 
-	err := s.db.QueryRow(context.Background(),
-		`SELECT id, user_id, title, description, status, priority, deadline, created_at
+    err := s.db.QueryRow(context.Background(),
+		`SELECT id, user_id, title, description, status, priority::text AS priority, deadline, created_at
          FROM tasks
          WHERE id = $1`,
-		id,
-	).Scan(
-		&task.Id,
-		&task.UserID,
-		&task.Title,
-		&task.Description,
-		&task.Status,
-		&task.Priority,
-		&task.Deadline,
-		&task.CreatedAt,
-	)
+        id,
+    ).Scan(
+        &task.Id,
+        &task.UserID,
+        &task.Title,
+        &task.Description,
+        &task.Status,
+        &task.Priority,
+        &task.Deadline,
+        &task.CreatedAt,
+    )
 
 	if errors.Is(err, pgx.ErrNoRows) {
 		return model.Task{}, fmt.Errorf("%s: %w", op, storage.ErrNotFound)

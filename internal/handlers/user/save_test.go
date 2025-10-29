@@ -11,6 +11,7 @@ import (
     "strings"
 
     "task-manager/internal/handlers/user/mocks"
+    "task-manager/internal/storage"
     "testing"
 )
 
@@ -51,6 +52,63 @@ func TestSaveUser(t *testing.T) {
             respError: "failed to save user",
             mockError: errors.New("unexpected error"),
         },
+        {
+            name:      "Duplicate email",
+            userName:  "user6",
+            email:     "user6@gmail.com",
+            respError: "user already exists",
+            mockError: storage.ErrExists,
+        },
+        {
+            name:     "Uppercase email",
+            userName: "user7",
+            email:    "USER7@GMAIL.COM",
+        },
+        {
+            name:     "Subdomain email",
+            userName: "user8",
+            email:    "user8@mail.example.com",
+        },
+        {
+            name:     "Plus alias email",
+            userName: "user9",
+            email:    "user9+tag@gmail.com",
+        },
+        {
+            name:     "Long email",
+            userName: "user10",
+            email:    "very.long.name.with.dots+tag@sub.example.co.uk",
+        },
+        {
+            name:      "Invalid missing domain",
+            userName:  "user11",
+            email:     "user11@",
+            respError: "invalid email format",
+        },
+        {
+            name:      "Invalid missing local",
+            userName:  "user12",
+            email:     "@example.com",
+            respError: "invalid email format",
+        },
+        {
+            name:      "Invalid space in email",
+            userName:  "user13",
+            email:     "user 13@example.com",
+            respError: "invalid email format",
+        },
+        {
+            name:     "Unicode name",
+            userName: "Самат",
+            email:    "samat@example.com",
+        },
+        {
+            name:      "SaveUser Error 2",
+            userName:  "user15",
+            email:     "user15@gmail.com",
+            respError: "failed to save user",
+            mockError: errors.New("db timeout"),
+        },
     }
     for _, tc := range cases {
         t.Run(tc.name, func(t *testing.T) {
@@ -87,4 +145,3 @@ func TestSaveUser(t *testing.T) {
         })
     }
 }
-
