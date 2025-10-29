@@ -4,7 +4,6 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
-	"strings"
 	resp "task-manager/internal/lib/response"
 	"task-manager/internal/model"
 	"task-manager/internal/storage"
@@ -29,7 +28,6 @@ func Get(log *slog.Logger, userGetter UserGetter) http.HandlerFunc {
 			"request_id", middleware.GetReqID(r.Context()))
 
 		name := chi.URLParam(r, "user_name")
-		name = strings.TrimSpace(strings.ToLower(name))
 
 		if name == "" {
 			log.Error("name is empty")

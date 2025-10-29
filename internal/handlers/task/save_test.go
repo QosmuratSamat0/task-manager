@@ -170,29 +170,29 @@ func TestTaskSaver(t *testing.T) {
 
 			taskSaver := mocks.NewTaskSaver(t)
 
-            if tc.respError == "" || tc.mockError != nil {
-                var dl time.Time
-                if tc.deadline != nil {
-                    dl = *tc.deadline
-                }
-                taskSaver.
-                    On("SaveTask", tc.userID, tc.title, tc.description, tc.status, tc.priority, dl).
-                    Return(int64(123), tc.mockError).
-                    Once()
-            }
+			if tc.respError == "" || tc.mockError != nil {
+				var dl time.Time
+				if tc.deadline != nil {
+					dl = *tc.deadline
+				}
+				taskSaver.
+					On("SaveTask", tc.userID, tc.title, tc.description, tc.status, tc.priority, dl).
+					Return(int64(123), tc.mockError).
+					Once()
+			}
 
 			log := slog.Default()
 
 			handler := Save(log, taskSaver)
 
-            var inputs string
-            if tc.deadline != nil {
-                inputs = fmt.Sprintf(`{"user_id":%d, "title":"%s", "description":"%s", "status":"%s", "priority":"%s", "deadline":"%s"}`,
-                    tc.userID, tc.title, tc.description, tc.status, tc.priority, tc.deadline.Format(time.RFC3339))
-            } else {
-                inputs = fmt.Sprintf(`{"user_id":%d, "title":"%s", "description":"%s", "status":"%s", "priority":"%s"}`,
-                    tc.userID, tc.title, tc.description, tc.status, tc.priority)
-            }
+			var inputs string
+			if tc.deadline != nil {
+				inputs = fmt.Sprintf(`{"user_id":%d, "title":"%s", "description":"%s", "status":"%s", "priority":"%s", "deadline":"%s"}`,
+					tc.userID, tc.title, tc.description, tc.status, tc.priority, tc.deadline.Format(time.RFC3339))
+			} else {
+				inputs = fmt.Sprintf(`{"user_id":%d, "title":"%s", "description":"%s", "status":"%s", "priority":"%s"}`,
+					tc.userID, tc.title, tc.description, tc.status, tc.priority)
+			}
 
 			req, err := http.NewRequest(http.MethodPost, "/tasks", strings.NewReader(inputs))
 

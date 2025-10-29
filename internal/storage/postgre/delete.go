@@ -6,10 +6,10 @@ import (
 	"task-manager/internal/storage"
 )
 
-func (s *Storage) DeleteUser(email string) error {
+func (s *Storage) DeleteUser(name string) error {
 	const op = "storage.postgre.DeleteUser"
 
-	res, err := s.db.Exec(context.Background(), `DELETE FROM users WHERE email = $1`, email)
+	res, err := s.db.Exec(context.Background(), `DELETE FROM users WHERE user_name = $1`, name)
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}

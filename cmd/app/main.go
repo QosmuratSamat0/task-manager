@@ -62,8 +62,8 @@ func main() {
 	// User routes under /users to avoid conflicts with root endpoints like /healthz
 	router.Route("/users", func(r chi.Router) {
 		r.Post("/", user.Save(log, storage))
-		r.Get("/{name}", user.Get(log, storage))
-		r.Delete("/{email}", user.Delete(log, storage))
+		r.Get("/{user_name}", user.Get(log, storage))
+		r.Delete("/{user_name}", user.Delete(log, storage))
 	})
 
 	// Task routes
