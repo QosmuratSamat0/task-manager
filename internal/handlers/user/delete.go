@@ -6,7 +6,11 @@ import (
     "github.com/go-chi/render"
     "log/slog"
     "net/http"
+    "net/url"
+    "strings"
+    "task-manager/internal/lib/logger/sl"
     resp "task-manager/internal/lib/response"
+    "task-manager/internal/storage"
 )
 
 type UserDeleter interface {
@@ -22,7 +26,12 @@ func Delete(log *slog.Logger, userDeleter UserDeleter) http.HandlerFunc {
             "op", op,
             "request_id", middleware.GetReqID(r.Context()))
 
-        email := chi.URLParam(r, "email")
+        raw := chi.URLParam(r, "email")
+        email, errUnescape := url.PathUnescape(raw)
+        if errUnescape != nil {
+            email = raw
+        }
+        email = strings.TrimSpace(email)
 
         if email == "" {
             log.Error("email is empty")
@@ -34,14 +43,16 @@ func Delete(log *slog.Logger, userDeleter UserDeleter) http.HandlerFunc {
 
         err := userDeleter.DeleteUser(email)
         if err != nil {
-            log.Error("failed to delete user")
-
+            if err == storage.ErrNotFound {
+                log.Error("user not found", sl.Err(err))
+                render.JSON(w, r, resp.Error("not found"))
+                return
+            }
+            log.Error("failed to delete user", sl.Err(err))
             render.JSON(w, r, resp.Error("internal error"))
-
             return
         }
 
         render.JSON(w, r, resp.OK())
     }
 }
-
