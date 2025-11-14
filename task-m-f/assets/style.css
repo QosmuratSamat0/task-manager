@@ -1,0 +1,87 @@
+:root {
+  --tm-primary: #4b7bec;
+  --tm-accent: #20bf6b;
+  --tm-bg: #ffffff;
+  --tm-text: #1c1c1e;
+  --tm-muted: #6c757d;
+}
+
+/* Dark theme variables will be toggled via [data-theme="dark"] on <html> */
+html[data-theme="dark"] {
+  --tm-bg: #121212;
+  --tm-text: #e5e5ea;
+  --tm-muted: #a1a1aa;
+}
+
+body {
+  background: var(--tm-bg);
+  color: var(--tm-text);
+}
+
+/* Smooth color/background transitions on theme change */
+body, .card, .navbar, .tm-footer, .table, .form-control, .form-select, .btn, .alert {
+  transition: background-color .3s ease, color .3s ease, border-color .3s ease, box-shadow .3s ease;
+}
+
+.tm-navbar {
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.tm-footer {
+  border-top: 1px solid rgba(0,0,0,0.06);
+  color: var(--tm-muted);
+}
+
+.brand-gradient {
+  background: linear-gradient(135deg, var(--tm-primary), var(--tm-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.6rem 1.2rem rgba(0,0,0,0.1);
+  transition: all .2s ease;
+}
+
+.pointer { cursor: pointer; }
+
+.form-error { color: #dc3545; font-size: .9rem; }
+
+.tm-badge { background: var(--tm-primary); }
+
+.tm-link { color: var(--tm-primary); text-decoration: none; }
+.tm-link:hover { text-decoration: underline; }
+
+.tm-pill { border-radius: 999px; padding: .2rem .6rem; font-size: .85rem; }
+
+.tm-kv dt { color: var(--tm-muted); }
+
+/* ---------- Animations ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Subtle animated gradient for brand */
+  .brand-gradient {
+    background-size: 200% 200%;
+    animation: brandShift 6s ease-in-out infinite;
+  }
+
+  @keyframes brandShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Button micro-interaction */
+  .btn { transition: transform .15s ease, box-shadow .15s ease; }
+  .btn:active { transform: translateY(1px) scale(0.99); }
+}
