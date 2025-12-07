@@ -1,6 +1,6 @@
 // Simple API client for the Go backend
 const TM_API = (function () {
-  const DEFAULT_BASE = 'http://localhost:8080';
+  const DEFAULT_BASE = 'https://task-manager-1fro.onrender.com';
 
   const baseURL = () => {
     return localStorage.getItem('tm_api_base') || DEFAULT_BASE;
