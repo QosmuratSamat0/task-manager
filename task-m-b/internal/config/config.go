@@ -9,7 +9,7 @@ import (
 
 type Config struct {
 	Env        string `yaml:"env" env-default:"local"`
-	Database   string `yaml:"database" env-required:"true"`
+	Database   string `yaml:"database" env-required:"true" env:"POSTGRES_URL"`
 	HTTPServer `yaml:"http_server" env-required:"true"`
 }
 
