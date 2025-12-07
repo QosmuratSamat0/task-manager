@@ -18,7 +18,7 @@ WORKDIR /root
 
 # Copy the binary and container config
 COPY --from=builder /app/app /root/app
-COPY config/container.yaml /root/config/container.yaml
+COPY task-m-b/config/container.yaml /root/config/container.yaml
 
 ENV CONFIG_PATH=/root/config/container.yaml
 
