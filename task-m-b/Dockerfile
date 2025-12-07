@@ -10,7 +10,7 @@ RUN go mod download
 COPY . .
 
 # Build a static binary for linux
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/app ./cmd/app
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/app ./task-m-b/cmd/app
 
 FROM alpine:3.20
 
