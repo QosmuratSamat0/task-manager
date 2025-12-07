@@ -12,17 +12,25 @@ COPY . .
 # Build a static binary for linux
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/app ./cmd/app
 
+# migrator
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/migrator ./cmd/migrator
+
 FROM alpine:3.20
 
 WORKDIR /root
 
 # Copy the binary and container config
 COPY --from=builder /app/app /root/app
-COPY config/container.yaml /root/config/container.yaml
+COPY --from=builder /app/migrator /root/migrator
+COPY ./migrations /root/migrations
+COPY ./config/container.yaml /root/config/container.yaml
 
 ENV CONFIG_PATH=/root/config/container.yaml
 
 EXPOSE 80
 
-CMD ["./app"]
+CMD /root/migrator \
+        --storage-path="$POSTGRES_URL" \
+        --migrations-path="/root/migrations" \
+    && ./app
 

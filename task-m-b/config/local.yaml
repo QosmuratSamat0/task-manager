@@ -1,5 +1,5 @@
 env: "local"
-database: "postgres://postgres:ayatuly@localhost:5432/postgres"
+database: ""
 http_server:
   address: "localhost:8020"
   timeout: 4s

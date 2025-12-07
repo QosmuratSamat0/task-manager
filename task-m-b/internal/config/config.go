@@ -1,15 +1,16 @@
 package config
 
 import (
-	"github.com/ilyakaznacheev/cleanenv"
 	"log"
 	"os"
 	"time"
+
+	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type Config struct {
 	Env        string `yaml:"env" env-default:"local"`
-	Database   string `yaml:"database" env-required:"true"`
+	Database   string `yaml:"database" env-required:"true" env:"POSTGRES_URL"`
 	HTTPServer `yaml:"http_server" env-required:"true"`
 }
 
@@ -23,7 +24,7 @@ func MustLoad() *Config {
 	// Resolve config path: prefer CONFIG_PATH, fallback to local file
 	configPath := os.Getenv("CONFIG_PATH")
 	if configPath == "" {
-		configPath = "config/local.yaml"
+		configPath = "config/prod.yaml"
 	}
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
@@ -38,7 +39,7 @@ func MustLoad() *Config {
 	}
 
 	// Optional overrides from env for containerized deployments
-	if dbURL := os.Getenv("DATABASE_URL"); dbURL != "" {
+	if dbURL := os.Getenv("POSTGRES_URL"); dbURL != "" {
 		cfg.Database = dbURL
 	}
 	if addr := os.Getenv("HTTP_ADDRESS"); addr != "" {
