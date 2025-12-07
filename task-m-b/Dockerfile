@@ -3,7 +3,7 @@ FROM golang:1.24-alpine AS builder
 WORKDIR /app
 
 # Download deps first for better layer caching
-COPY go.mod go.sum ./
+COPY task-m-b/go.mod task-m-b/go.sum ./
 RUN go mod download
 
 # Copy the rest of the sources
