@@ -43,6 +43,12 @@
   <script src="assets/components.js"></script>
   <script src="assets/api.js"></script>
   <script>
+    const current = tmRequireUser();
+    if (current && current.role !== 'admin') {
+      alert('Admin access only');
+      window.location.href = 'tasks.html';
+    }
+
     const rows = document.getElementById('userRows');
     const empty = document.getElementById('emptyUsers');
     const filter = document.getElementById('filter');
@@ -105,7 +111,9 @@
       }
     });
 
-    loadUsers();
+    if (current && current.role === 'admin') {
+      loadUsers();
+    }
   </script>
 </body>
 </html>

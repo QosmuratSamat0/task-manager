@@ -13,9 +13,20 @@ html[data-theme="dark"] {
   --tm-muted: #a1a1aa;
 }
 
+html, body {
+  height: 100%;
+}
+
 body {
   background: var(--tm-bg);
   color: var(--tm-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
 }
 
 /* Smooth color/background transitions on theme change */
@@ -30,6 +41,7 @@ body, .card, .navbar, .tm-footer, .table, .form-control, .form-select, .btn, .al
 .tm-footer {
   border-top: 1px solid rgba(0,0,0,0.06);
   color: var(--tm-muted);
+  margin-top: auto;
 }
 
 .brand-gradient {

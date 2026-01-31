@@ -22,10 +22,10 @@
     <div class="card shadow-sm mb-3">
       <div class="card-body">
         <h6 class="fw-semibold">API Base URL</h6>
-        <p class="text-muted small mb-2">Default is <code>http://localhost:8080</code>. Update if your backend runs elsewhere.</p>
+        <p class="text-muted small mb-2">Default is <code>http://localhost:3000</code>. Update if your backend runs elsewhere.</p>
         <div class="input-group">
           <span class="input-group-text">Base</span>
-          <input id="apiBase" type="text" class="form-control" placeholder="http://localhost:8080">
+          <input id="apiBase" type="text" class="form-control" placeholder="http://localhost:3000">
           <button id="saveApiBase" class="btn btn-primary">Save</button>
           <button id="resetApiBase" class="btn btn-outline-secondary">Reset</button>
         </div>
@@ -67,6 +67,7 @@
     document.getElementById('clearSession').addEventListener('click', () => {
       if (!confirm('Clear local app data?')) return;
       localStorage.removeItem('tm_user');
+      window.name = '';
       alert('Local session cleared');
     });
   </script>

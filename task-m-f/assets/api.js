@@ -1,6 +1,6 @@
-// Simple API client for the Go backend
+// Simple API client for the Node backend
 const TM_API = (function () {
-  const DEFAULT_BASE = 'https://task-manager-1fro.onrender.com';
+  const DEFAULT_BASE = 'http://localhost:3000';
 
   const baseURL = () => {
     return localStorage.getItem('tm_api_base') || DEFAULT_BASE;
@@ -42,6 +42,13 @@ const TM_API = (function () {
   const listTasksByUser = (userId) => http('GET', `/tasks/by-user/${encodeURIComponent(userId)}`);
   const updateTask = (id, payload) => http('PUT', `/tasks/${encodeURIComponent(id)}`, payload);
 
+  // Projects (admin)
+  const listProjects = () => http('GET', '/projects');
+  const getProject = (id) => http('GET', `/projects/${encodeURIComponent(id)}`);
+  const createProject = (payload) => http('POST', '/projects', payload);
+  const updateProject = (id, payload) => http('PUT', `/projects/${encodeURIComponent(id)}`, payload);
+  const deleteProject = (id) => http('DELETE', `/projects/${encodeURIComponent(id)}`);
+
   return {
     baseURL,
     getUser,
@@ -55,5 +62,10 @@ const TM_API = (function () {
     getTaskById,
     deleteTaskById,
     updateTask,
+    listProjects,
+    getProject,
+    createProject,
+    updateProject,
+    deleteProject,
   };
 })();

@@ -101,9 +101,39 @@
     return dt.toISOString();
   };
 
+  function readUserFromWindowName() {
+    const raw = window.name || '';
+    if (!raw || raw.indexOf('tm_user:') !== 0) return null;
+    try {
+      const payload = raw.slice('tm_user:'.length);
+      return JSON.parse(payload);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  window.tmGetUser = function () {
+    const fromStorage = localStorage.getItem('tm_user');
+    if (fromStorage) {
+      try { return JSON.parse(fromStorage); } catch (_) { /* ignore */ }
+    }
+    const fromWindow = readUserFromWindowName();
+    if (fromWindow) {
+      localStorage.setItem('tm_user', JSON.stringify(fromWindow));
+      return fromWindow;
+    }
+    return null;
+  };
+
+  window.tmSetUser = function (user) {
+    if (!user) return;
+    localStorage.setItem('tm_user', JSON.stringify(user));
+    window.name = 'tm_user:' + JSON.stringify(user);
+  };
+
   // Utility: get current user or redirect
   window.tmRequireUser = function () {
-    const user = JSON.parse(localStorage.getItem('tm_user') || 'null');
+    const user = window.tmGetUser ? window.tmGetUser() : null;
     if (!user) {
       window.location.href = 'login.html';
       return null;

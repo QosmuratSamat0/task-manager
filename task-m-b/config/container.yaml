@@ -1,7 +1,0 @@
-env: "prod"
-database: ""
-http_server:
-  address: "0.0.0.0:80"
-  timeout: 4s
-  idle_timeout: 60s
-

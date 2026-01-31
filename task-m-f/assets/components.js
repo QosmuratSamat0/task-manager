@@ -8,8 +8,9 @@
     document.head.appendChild(s);
   }
 
-  const user = JSON.parse(localStorage.getItem('tm_user') || 'null');
+  const user = (window.tmGetUser ? window.tmGetUser() : JSON.parse(localStorage.getItem('tm_user') || 'null'));
   const isAuthed = !!user;
+  const isAdmin = !!(user && user.role === 'admin');
 
   const nav = `
   <nav class="navbar navbar-expand-lg bg-body-tertiary tm-navbar">
@@ -24,6 +25,8 @@
           <li class="nav-item"><a class="nav-link" href="tasks.html">Tasks</a></li>
           <li class="nav-item"><a class="nav-link" href="completed.html">Completed</a></li>
           <li class="nav-item"><a class="nav-link" href="settings.html">Settings</a></li>
+          ${isAdmin ? '<li class="nav-item"><a class="nav-link" href="users.html">Users</a></li>' : ''}
+          ${isAdmin ? '<li class="nav-item"><a class="nav-link" href="projects.html">Projects</a></li>' : ''}
         </ul>
         <div class="d-flex gap-2 align-items-center">
           ${isAuthed ? `<span class="text-muted small">Signed in as</span> <span class="badge text-bg-primary">${user.user_name}</span>` : ''}
@@ -43,8 +46,6 @@
       <div class="small">
         Owner: Samat Kosmurat ·
         <a class="tm-link" href="https://t.me/qosmurat" target="_blank" rel="noopener">Telegram</a> ·
-        <a class="tm-link" href="https://github.com/QosmuratSamat0/frontend" target="_blank" rel="noopener">GitHub</a> ·
-        <a class="tm-link" href="https://task-mn.netlify.app/index.html" target="_blank" rel="noopener">Netlify</a> ·
         <a class="tm-link" href="settings.html">Toggle Theme</a>
       </div>
     </div>
@@ -61,6 +62,7 @@
     if (el && el.id === 'tmLogoutBtn') {
       e.preventDefault();
       localStorage.removeItem('tm_user');
+      window.name = '';
       window.location.href = 'login.html';
     }
   });
