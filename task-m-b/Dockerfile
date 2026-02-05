@@ -1,36 +1,22 @@
-FROM golang:1.24-alpine AS builder
+FROM node:18-alpine
 
 WORKDIR /app
 
-# Download deps first for better layer caching
-COPY go.mod go.sum ./
-RUN go mod download
+RUN apk add --no-cache python3 make g++
 
-# Copy the rest of the sources
-COPY . .
+COPY package.json package-lock.json ./
 
-# Build a static binary for linux
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/app ./cmd/app
+RUN npm install
+RUN npm rebuild bcrypt --build-from-source
 
-# migrator
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/migrator ./cmd/migrator
+COPY src ./src
+COPY config ./config
+COPY server.js .
 
-FROM alpine:3.20
+ENV NODE_ENV=production
+ENV CONFIG_PATH=/app/config/container.yaml
 
-WORKDIR /root
+EXPOSE 5000
 
-# Copy the binary and container config
-COPY --from=builder /app/app /root/app
-COPY --from=builder /app/migrator /root/migrator
-COPY ./migrations /root/migrations
-COPY ./config/container.yaml /root/config/container.yaml
-
-ENV CONFIG_PATH=/root/config/container.yaml
-
-EXPOSE 80
-
-CMD /root/migrator \
-        --storage-path="$POSTGRES_URL" \
-        --migrations-path="/root/migrations" \
-    && ./app
+CMD ["npm", "start"]
 

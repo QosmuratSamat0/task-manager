@@ -5,57 +5,17 @@ services:
     image: task-manager
     build: .
     container_name: backend
-
-    depends_on:
-      db:
-        condition: service_healthy
-      migrate:
-        condition: service_completed_successfully
     environment:
-      DATABASE_URL: postgres://${DB_USER}:${DB_PASS}@db:5432/${DB_NAME}?sslmode=disable
+      MONGODB_URI: ${MONGODB_URI}
+      PORT: ${PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      BCRYPT_SALT_ROUNDS: ${BCRYPT_SALT_ROUNDS}
+      NODE_ENV: production
     ports:
-      - "8080:80"
+      - "3000:${PORT}"
     healthcheck:
-      test: ["CMD-SHELL", "wget -q -O- http://localhost:80/healthz || exit 1"]
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:${PORT}/healthz || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
-
-
-  db:
-    image: postgres:16.0
-
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASS}
-      POSTGRES_DB: ${DB_NAME}
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  migrate:
-    image: migrate/migrate:4
-    depends_on:
-      db:
-        condition: service_healthy
-    command:
-      [
-        "-path=/migrations",
-        "-database=postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:5432/${DB_NAME}?sslmode=disable",
-        "up"
-      ]
-    volumes:
-      - ./migrations:/migrations
-    env_file:
-      - .env
-    restart: "no"
-
-
-volumes:
-  db_data:
