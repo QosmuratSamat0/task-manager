@@ -10,7 +10,12 @@ window.TM_API = (function () {
 
   async function http(method, path, body) {
     const url = baseURL() + path;
-    const opts = { method, headers };
+    const opts = { method, headers: { ...headers } };
+    // Add JWT token if available
+    const user = typeof window !== 'undefined' && window.tmGetUser ? window.tmGetUser() : (typeof localStorage !== 'undefined' ? JSON.parse(localStorage.getItem('tm_user') || 'null') : null);
+    if (user && user.token) {
+      opts.headers.Authorization = `Bearer ${user.token}`;
+    }
     if (body) opts.body = JSON.stringify(body);
     const res = await fetch(url, opts);
     const text = await res.text();
@@ -33,6 +38,7 @@ window.TM_API = (function () {
 
   // Auth
   const login = (emailOrUsername, password) => http('POST', '/auth/login', { email: emailOrUsername, password });
+  const register = (payload) => http('POST', '/auth/register', payload);
 
   // Tasks
   const createTask = (payload) => http('POST', '/tasks/', payload);
@@ -66,6 +72,7 @@ window.TM_API = (function () {
     createUser,
     deleteUser,
     login,
+    register,
     createTask,
     listAllTasks,
     listTasksByUser,

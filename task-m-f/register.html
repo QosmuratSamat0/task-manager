@@ -60,13 +60,14 @@
         password: form.password.value
       };
       try {
-        const res = await TM_API.createUser(payload);
-        // Backend returns { status, email }, fetch created user to store full object
-        const user = await TM_API.getUser(payload.user_name);
+        const res = await TM_API.register(payload);
+        if (!res || !res.data) throw new Error('Registration failed');
+        // Save user data with token
+        const userData = { ...res.data, token: res.token };
         if (window.tmSetUser) {
-          window.tmSetUser(user.data);
+          window.tmSetUser(userData);
         } else {
-          localStorage.setItem('tm_user', JSON.stringify(user.data));
+          localStorage.setItem('tm_user', JSON.stringify(userData));
         }
         tmToast('Account created and signed in', 'success');
         window.location.href = 'tasks.html';

@@ -21,13 +21,13 @@
       </button>
       <div class="collapse navbar-collapse" id="tmNav">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="tasks.html">Tasks</a></li>
-          <li class="nav-item"><a class="nav-link" href="completed.html">Completed</a></li>
-          <li class="nav-item"><a class="nav-link" href="settings.html">Settings</a></li>
+          ${isAuthed ? '<li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>' : ''}
+          ${isAuthed ? '<li class="nav-item"><a class="nav-link" href="tasks.html">Tasks</a></li>' : ''}
+          ${isAuthed ? '<li class="nav-item"><a class="nav-link" href="completed.html">Completed</a></li>' : ''}
           ${isAdmin ? '<li class="nav-item"><a class="nav-link" href="admin.html">📊 Admin</a></li>' : ''}
           ${isAdmin ? '<li class="nav-item"><a class="nav-link" href="users.html">Users</a></li>' : ''}
           ${isAdmin ? '<li class="nav-item"><a class="nav-link" href="projects.html">Projects</a></li>' : ''}
+          ${isAuthed ? '<li class="nav-item"><a class="nav-link" href="settings.html">Settings</a></li>' : ''}
         </ul>
         <div class="d-flex gap-2 align-items-center">
           ${isAuthed ? `<span class="text-muted small">Signed in as</span> <span class="badge text-bg-primary">${user.user_name}</span>` : ''}
@@ -64,7 +64,7 @@
       e.preventDefault();
       localStorage.removeItem('tm_user');
       window.name = '';
-      window.location.href = 'login.html';
+      window.location.href = 'index.html';
     }
   });
 })();

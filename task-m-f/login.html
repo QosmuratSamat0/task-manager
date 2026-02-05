@@ -47,10 +47,12 @@
       try {
         const res = await TM_API.login(email, password);
         if (!res || !res.data) throw new Error('Invalid credentials');
+        // Save user data with token
+        const userData = { ...res.data, token: res.token };
         if (window.tmSetUser) {
-          window.tmSetUser(res.data);
+          window.tmSetUser(userData);
         } else {
-          localStorage.setItem('tm_user', JSON.stringify(res.data));
+          localStorage.setItem('tm_user', JSON.stringify(userData));
         }
         tmToast('Welcome back, ' + res.data.user_name + '!', 'success');
         window.location.href = 'tasks.html';
