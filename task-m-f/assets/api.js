@@ -32,7 +32,7 @@ window.TM_API = (function () {
   const deleteUser = (userName) => http('DELETE', `/users/${encodeURIComponent(userName)}`);
 
   // Auth
-  const login = (userName, password) => http('POST', '/auth/login', { user_name: userName, password });
+  const login = (emailOrUsername, password) => http('POST', '/auth/login', { email: emailOrUsername, password });
 
   // Tasks
   const createTask = (payload) => http('POST', '/tasks/', payload);

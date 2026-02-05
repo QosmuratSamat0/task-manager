@@ -13,9 +13,9 @@
     <h1 class="h3 mb-4">Login</h1>
     <form id="loginForm" novalidate>
       <div class="mb-3">
-        <label class="form-label">Username</label>
-        <input type="text" class="form-control" name="user_name" required minlength="2" maxlength="64">
-        <div class="invalid-feedback">Please enter your username (2–64 chars)</div>
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" name="email" required>
+        <div class="invalid-feedback">Please enter a valid email</div>
       </div>
       <div class="mb-3">
         <label class="form-label">Password</label>
@@ -24,7 +24,7 @@
       </div>
       <div class="d-flex justify-content-between align-items-center">
         <button class="btn btn-primary" type="submit">Login</button>
-        <a class="tm-link" href="/frontend/register.html">Create an account</a>
+        <a class="tm-link" href="register.html">Create an account</a>
       </div>
     </form>
     <div id="loginError" class="form-error mt-3" style="display:none;"></div>
@@ -42,10 +42,10 @@
       e.preventDefault();
       errorBox.style.display = 'none';
       if (!tmValidate(form)) return;
-      const userName = form.user_name.value.trim();
+      const email = form.email.value.trim();
       const password = form.password.value;
       try {
-        const res = await TM_API.login(userName, password);
+        const res = await TM_API.login(email, password);
         if (!res || !res.data) throw new Error('Invalid credentials');
         if (window.tmSetUser) {
           window.tmSetUser(res.data);
