@@ -47,7 +47,15 @@ const TM_API = (function () {
   const getProject = (id) => http('GET', `/projects/${encodeURIComponent(id)}`);
   const createProject = (payload) => http('POST', '/projects', payload);
   const updateProject = (id, payload) => http('PUT', `/projects/${encodeURIComponent(id)}`, payload);
-  const deleteProject = (id) => http('DELETE', `/projects/${encodeURIComponent(id)}`);
+  // Categories
+  const listCategories = () => http('GET', '/categories');
+  const getCategory = (id) => http('GET', `/categories/${encodeURIComponent(id)}`);
+  const createCategory = (payload) => http('POST', '/categories', payload);
+  const updateCategory = (id, payload) => http('PUT', `/categories/${encodeURIComponent(id)}`, payload);
+  const deleteCategory = (id) => http('DELETE', `/categories/${encodeURIComponent(id)}`);
+
+  // Stats (admin only)
+  const getStats = () => http('GET', '/stats');
 
   return {
     baseURL,
@@ -67,5 +75,11 @@ const TM_API = (function () {
     createProject,
     updateProject,
     deleteProject,
+    listCategories,
+    getCategory,
+    createCategory,
+    updateCategory,
+    deleteCategory,
+    getStats,
   };
 })();

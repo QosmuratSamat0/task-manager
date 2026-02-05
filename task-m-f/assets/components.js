@@ -25,6 +25,7 @@
           <li class="nav-item"><a class="nav-link" href="tasks.html">Tasks</a></li>
           <li class="nav-item"><a class="nav-link" href="completed.html">Completed</a></li>
           <li class="nav-item"><a class="nav-link" href="settings.html">Settings</a></li>
+          ${isAdmin ? '<li class="nav-item"><a class="nav-link" href="admin.html">📊 Admin</a></li>' : ''}
           ${isAdmin ? '<li class="nav-item"><a class="nav-link" href="users.html">Users</a></li>' : ''}
           ${isAdmin ? '<li class="nav-item"><a class="nav-link" href="projects.html">Projects</a></li>' : ''}
         </ul>

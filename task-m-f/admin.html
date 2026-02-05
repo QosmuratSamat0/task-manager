@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TaskManager - Admin Panel</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header id="app-header"></header>
+  <main class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <h1 class="h4 mb-0">Admin Panel</h1>
+      <button class="btn btn-outline-secondary btn-sm" onclick="tmToggleTheme()">Toggle Theme</button>
+    </div>
+
+    <div class="row g-4">
+      <!-- Stats Cards -->
+      <div class="col-12 col-md-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <h6 class="text-muted">Total Users</h6>
+                <h2 id="totalUsers">-</h2>
+              </div>
+              <span class="badge text-bg-primary">👥</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <h6 class="text-muted">Total Tasks</h6>
+                <h2 id="totalTasks">-</h2>
+              </div>
+              <span class="badge text-bg-success">📋</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <h6 class="text-muted">Total Projects</h6>
+                <h2 id="totalProjects">-</h2>
+              </div>
+              <span class="badge text-bg-info">📁</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <h6 class="text-muted">Last Updated</h6>
+                <small id="lastUpdated">-</small>
+              </div>
+              <span class="badge text-bg-warning">⏱️</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 mt-4">
+      <!-- Task Status Distribution -->
+      <div class="col-12 col-lg-6">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Tasks by Status</h5>
+            <div id="tasksByStatus">
+              <div class="text-muted">Loading...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task Priority Distribution -->
+      <div class="col-12 col-lg-6">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Tasks by Priority</h5>
+            <div id="tasksByPriority">
+              <div class="text-muted">Loading...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Tasks -->
+    <div class="row g-4 mt-4">
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Recent Tasks</h5>
+            <div class="table-responsive">
+              <table class="table align-middle">
+                <thead>
+                  <tr>
+                    <th>Task</th>
+                    <th>User</th>
+                    <th>Project</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Created</th>
+                  </tr>
+                </thead>
+                <tbody id="recentTasks"></tbody>
+              </table>
+            </div>
+            <div id="emptyTasks" class="text-muted" style="display:none;">No recent tasks.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Users -->
+    <div class="row g-4 mt-4">
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Recent Users</h5>
+            <div class="table-responsive">
+              <table class="table align-middle">
+                <thead>
+                  <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Created</th>
+                  </tr>
+                </thead>
+                <tbody id="recentUsers"></tbody>
+              </table>
+            </div>
+            <div id="emptyUsers" class="text-muted" style="display:none;">No recent users.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div id="app-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/app.js"></script>
+  <script src="assets/components.js"></script>
+  <script src="assets/api.js"></script>
+  <script>
+    const user = tmRequireUser();
+    if (user && user.role === 'admin') {
+      async function loadStats() {
+        try {
+          const res = await TM_API.getStats();
+          const stats = res.data;
+
+          // Update summary cards
+          document.getElementById('totalUsers').textContent = stats.totalUsers;
+          document.getElementById('totalTasks').textContent = stats.totalTasks;
+          document.getElementById('totalProjects').textContent = stats.totalProjects;
+          document.getElementById('lastUpdated').textContent = new Date(stats.timestamp).toLocaleString();
+
+          // Task Status Distribution
+          const statusHtml = stats.tasksByStatus.map(s => `
+            <div class="d-flex justify-content-between mb-2">
+              <span>${s._id || 'unknown'}</span>
+              <span class="badge text-bg-info">${s.count}</span>
+            </div>
+          `).join('');
+          document.getElementById('tasksByStatus').innerHTML = statusHtml || '<div class="text-muted">No data</div>';
+
+          // Task Priority Distribution
+          const priorityHtml = stats.tasksByPriority.map(p => `
+            <div class="d-flex justify-content-between mb-2">
+              <span>${p._id || 'unknown'}</span>
+              <span class="badge text-bg-info">${p.count}</span>
+            </div>
+          `).join('');
+          document.getElementById('tasksByPriority').innerHTML = priorityHtml || '<div class="text-muted">No data</div>';
+
+          // Recent Tasks
+          const taskRows = document.getElementById('recentTasks');
+          taskRows.innerHTML = '';
+          if (stats.recentTasks.length === 0) {
+            document.getElementById('emptyTasks').style.display = 'block';
+          } else {
+            stats.recentTasks.forEach(t => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td>
+                  <div class="fw-semibold">${t.title || '(untitled)'}</div>
+                  <div class="small text-muted">${t.description || ''}</div>
+                </td>
+                <td>${t.user && t.user.userName ? t.user.userName : '-'}</td>
+                <td><span class="badge text-bg-secondary">${t.project && t.project.name ? t.project.name : '-'}</span></td>
+                <td><span class="badge text-bg-warning">${t.status}</span></td>
+                <td><span class="badge text-bg-info">${t.priority}</span></td>
+                <td><small>${new Date(t.createdAt).toLocaleString()}</small></td>
+              `;
+              taskRows.appendChild(tr);
+            });
+          }
+
+          // Recent Users
+          const userRows = document.getElementById('recentUsers');
+          userRows.innerHTML = '';
+          if (stats.recentUsers.length === 0) {
+            document.getElementById('emptyUsers').style.display = 'block';
+          } else {
+            stats.recentUsers.forEach(u => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td><span class="fw-semibold">${u.userName}</span></td>
+                <td>${u.email}</td>
+                <td><span class="badge text-bg-primary">${u.role}</span></td>
+                <td><small>${new Date(u.createdAt).toLocaleString()}</small></td>
+              `;
+              userRows.appendChild(tr);
+            });
+          }
+        } catch (err) {
+          tmToast('Failed to load stats', 'error');
+          console.error(err);
+        }
+      }
+
+      loadStats();
+      // Refresh stats every 30 seconds
+      setInterval(loadStats, 30000);
+    } else {
+      window.location.href = 'login.html';
+    }
+  </script>
+</body>
+</html>

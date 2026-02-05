@@ -5,12 +5,18 @@ const { toTaskResponse } = require('../utils/formatters');
 
 async function getTasks(req, res) {
   const query = {};
-  if (req.query.projectId || req.query.project_id) {
+  
+  // If user is authenticated and not admin, restrict to their own tasks
+  if (req.user && req.user.role !== 'admin') {
+    query.user = req.user._id;
+  } else if (req.query.projectId || req.query.project_id) {
     query.project = req.query.projectId || req.query.project_id;
   }
+  
   if (req.query.userId || req.query.user_id) {
     query.user = req.query.userId || req.query.user_id;
   }
+  
   const tasks = await Task.find(query).sort({ createdAt: -1 });
   return res.json({ data: tasks.map(toTaskResponse) });
 }

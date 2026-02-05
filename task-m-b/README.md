@@ -58,3 +58,37 @@ Projects
 - `POST /projects`
 - `PUT /projects/:id`
 - `DELETE /projects/:id`
+
+Formatters
+----------
+The backend uses utility formatters (see `src/utils/formatters.js`) to ensure consistent API responses:
+- `toUserResponse(user)`: Converts a user document to a clean API response (id, user_name, email, role, created_at, updated_at).
+- `toProjectResponse(project)`: Converts a project document to a clean API response (id, name, description, created_at, updated_at).
+- `toTaskResponse(task)`: Converts a task document to a clean API response (id, user_id, project_id, title, description, status, priority, deadline, created_at, updated_at).
+
+These formatters:
+- Convert MongoDB's `_id` to `id` and use snake_case keys
+- Handle both populated and unpopulated references (user/project)
+- Hide internal fields from API responses
+- Are used before sending any user, project, or task data to the frontend
+
+Screenshots
+-----------
+
+**User Registration and Login:**
+![Register and Login](../screenshots/register-login.png)
+
+**Project Creation:**
+![Create Project](../screenshots/create-project.png)
+
+**Task Creation with Project Selection:**
+![Create Task with Project](../screenshots/create-task.png)
+
+**Frontend Home:**
+![Frontend Home](../screenshots/frontend-home.png)
+
+**User List:**
+![User List](../screenshots/user-list.png)
+
+**Project List:**
+![Project List](../screenshots/project-list.png)

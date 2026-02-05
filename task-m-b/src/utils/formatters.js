@@ -39,4 +39,16 @@ function toTaskResponse(task) {
   };
 }
 
-module.exports = { toUserResponse, toProjectResponse, toTaskResponse };
+function toCategoryResponse(category) {
+  if (!category) return null;
+  return {
+    id: String(category._id),
+    name: category.name,
+    description: category.description,
+    color: category.color,
+    created_at: category.createdAt,
+    updated_at: category.updatedAt,
+  };
+}
+
+module.exports = { toUserResponse, toProjectResponse, toTaskResponse, toCategoryResponse };
