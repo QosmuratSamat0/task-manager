@@ -156,12 +156,12 @@
   <script src="assets/components.js"></script>
   <script src="assets/api.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    function initAdmin() {
       const user = tmRequireUser();
       if (user && user.role === 'admin') {
         async function loadStats() {
         try {
-          const res = await TM_API.getStats();
+          const res = await window.TM_API.getStats();
           const stats = res.data;
 
           // Update summary cards
@@ -240,7 +240,14 @@
     } else {
       window.location.href = 'login.html';
     }
-    });
+    }
+
+    // Wait for scripts to load, then initialize
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initAdmin);
+    } else {
+      setTimeout(initAdmin, 100);
+    }
   </script>
 </body>
 </html>

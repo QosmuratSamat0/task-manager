@@ -1,5 +1,5 @@
 // Simple API client for the Node backend
-const TM_API = (function () {
+window.TM_API = (function () {
   const DEFAULT_BASE = 'https://task-manager-o9rz.onrender.com';
 
   const baseURL = () => {
