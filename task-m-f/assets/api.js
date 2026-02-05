@@ -47,6 +47,8 @@ window.TM_API = (function () {
   const getProject = (id) => http('GET', `/projects/${encodeURIComponent(id)}`);
   const createProject = (payload) => http('POST', '/projects', payload);
   const updateProject = (id, payload) => http('PUT', `/projects/${encodeURIComponent(id)}`, payload);
+  const deleteProject = (id) => http('DELETE', `/projects/${encodeURIComponent(id)}`);
+
   // Categories
   const listCategories = () => http('GET', '/categories');
   const getCategory = (id) => http('GET', `/categories/${encodeURIComponent(id)}`);
