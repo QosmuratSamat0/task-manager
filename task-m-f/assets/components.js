@@ -27,6 +27,7 @@
           ${isAdmin ? '<li class="nav-item"><a class="nav-link" href="admin.html">📊 Admin</a></li>' : ''}
           ${isAdmin ? '<li class="nav-item"><a class="nav-link" href="users.html">Users</a></li>' : ''}
           ${isAdmin ? '<li class="nav-item"><a class="nav-link" href="projects.html">Projects</a></li>' : ''}
+          ${isAdmin ? '<li class="nav-item"><a class="nav-link" href="categories.html">Categories</a></li>' : ''}
           ${isAuthed ? '<li class="nav-item"><a class="nav-link" href="settings.html">Settings</a></li>' : ''}
         </ul>
         <div class="d-flex gap-2 align-items-center">

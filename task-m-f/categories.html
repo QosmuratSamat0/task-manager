@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TaskManager · Categories</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header id="app-header"></header>
+  <main class="container py-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h1 class="h4 mb-0">Categories</h1>
+      <button class="btn btn-outline-secondary btn-sm" onclick="tmToggleTheme()">Toggle Theme</button>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-12 col-lg-5">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">Create Category</h5>
+            <form id="categoryForm" novalidate>
+              <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-control" name="name" required maxlength="120">
+                <div class="invalid-feedback">Name is required</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" name="description" rows="3" maxlength="1000"></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Color</label>
+                <div class="input-group">
+                  <input type="color" class="form-control form-control-color" name="color" value="#007bff" title="Choose color">
+                  <input type="text" class="form-control" name="colorText" placeholder="#007bff" readonly>
+                </div>
+              </div>
+              <button class="btn btn-primary" type="submit">Add Category</button>
+              <div id="categoryError" class="form-error mt-2" style="display:none;"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-7">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="card-title mb-0">All Categories</h5>
+              <button id="refreshBtn" class="btn btn-outline-primary btn-sm">Refresh</button>
+            </div>
+            <div class="table-responsive">
+              <table class="table align-middle">
+                <thead>
+                <tr>
+                  <th>Color</th>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Created</th>
+                  <th></th>
+                </tr>
+                </thead>
+                <tbody id="categoryRows"></tbody>
+              </table>
+            </div>
+            <div id="emptyState" class="text-muted" style="display:none;">No categories yet.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div id="app-footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/app.js"></script>
+  <script src="assets/components.js"></script>
+  <script src="assets/api.js"></script>
+  <script>
+    const user = tmRequireUser();
+    if (user && user.role !== 'admin') {
+      alert('Admin access only');
+      window.location.href = 'tasks.html';
+    }
+
+    if (user && user.role === 'admin') {
+      const form = document.getElementById('categoryForm');
+      const errorBox = document.getElementById('categoryError');
+      const rows = document.getElementById('categoryRows');
+      const empty = document.getElementById('emptyState');
+      const colorInput = form.color;
+      const colorText = form.colorText;
+
+      // Update color text when color picker changes
+      colorInput.addEventListener('change', (e) => {
+        colorText.value = e.target.value;
+      });
+
+      async function loadCategories() {
+        rows.innerHTML = '';
+        try {
+          const res = await window.TM_API.listCategories();
+          const list = (res && res.data) || [];
+          if (list.length === 0) {
+            empty.style.display = 'block';
+            return;
+          }
+          empty.style.display = 'none';
+          for (const c of list) {
+            const created = c.createdAt ? new Date(c.createdAt).toLocaleString() : '—';
+            const tr = document.createElement('tr');
+            const colorSwatch = `<div style="width: 24px; height: 24px; background-color: ${c.color || '#ccc'}; border-radius: 4px;"></div>`;
+            tr.innerHTML = `
+              <td>${colorSwatch}</td>
+              <td class="fw-semibold">${c.name || '(unnamed)'}</td>
+              <td class="text-muted">${c.description || ''}</td>
+              <td><small>${created}</small></td>
+              <td>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory('${c._id}')">Delete</button>
+              </td>
+            `;
+            rows.appendChild(tr);
+          }
+        } catch (err) {
+          tmToast('Failed to load categories', 'error');
+          console.error(err);
+        }
+      }
+
+      window.deleteCategory = async (id) => {
+        if (!confirm('Delete this category?')) return;
+        try {
+          await window.TM_API.deleteCategory(id);
+          tmToast('Category deleted', 'success');
+          loadCategories();
+        } catch (err) {
+          tmToast('Failed to delete category', 'error');
+          console.error(err);
+        }
+      };
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorBox.style.display = 'none';
+        if (!tmValidate(form)) return;
+
+        const payload = {
+          name: form.name.value.trim(),
+          description: form.description.value.trim(),
+          color: form.color.value,
+        };
+
+        try {
+          await window.TM_API.createCategory(payload);
+          tmToast('Category created', 'success');
+          form.reset();
+          colorText.value = '#007bff';
+          colorInput.value = '#007bff';
+          loadCategories();
+        } catch (err) {
+          const msg = (err && err.message) || 'Failed to create category';
+          errorBox.textContent = msg;
+          errorBox.style.display = 'block';
+          tmToast(msg, 'error');
+        }
+      });
+
+      document.getElementById('refreshBtn').addEventListener('click', loadCategories);
+      loadCategories();
+    }
+  </script>
+</body>
+</html>
