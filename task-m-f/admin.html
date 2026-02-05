@@ -156,9 +156,10 @@
   <script src="assets/components.js"></script>
   <script src="assets/api.js"></script>
   <script>
-    const user = tmRequireUser();
-    if (user && user.role === 'admin') {
-      async function loadStats() {
+    document.addEventListener('DOMContentLoaded', function() {
+      const user = tmRequireUser();
+      if (user && user.role === 'admin') {
+        async function loadStats() {
         try {
           const res = await TM_API.getStats();
           const stats = res.data;
@@ -239,6 +240,7 @@
     } else {
       window.location.href = 'login.html';
     }
+    });
   </script>
 </body>
 </html>
