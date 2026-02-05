@@ -1,4 +1,0 @@
-env: "prod"
-database: ""
-http_server:
-  address: ""
