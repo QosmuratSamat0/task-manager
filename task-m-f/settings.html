@@ -19,20 +19,6 @@
       </div>
     </div>
 
-    <div class="card shadow-sm mb-3">
-      <div class="card-body">
-        <h6 class="fw-semibold">API Base URL</h6>
-        <p class="text-muted small mb-2">Default is <code>http://localhost:3000</code>. Update if your backend runs elsewhere.</p>
-        <div class="input-group">
-          <span class="input-group-text">Base</span>
-          <input id="apiBase" type="text" class="form-control" placeholder="http://localhost:3000">
-          <button id="saveApiBase" class="btn btn-primary">Save</button>
-          <button id="resetApiBase" class="btn btn-outline-secondary">Reset</button>
-        </div>
-        <div class="small text-muted mt-2">Current: <code id="apiBaseCur"></code></div>
-      </div>
-    </div>
-
     <div class="card shadow-sm">
       <div class="card-body">
         <h6 class="fw-semibold">Account</h6>
@@ -48,22 +34,6 @@
   <script src="assets/components.js"></script>
   <script src="assets/api.js"></script>
   <script>
-    const baseInput = document.getElementById('apiBase');
-    const current = document.getElementById('apiBaseCur');
-    const refreshCur = () => current.textContent = TM_API.baseURL();
-    refreshCur();
-    document.getElementById('saveApiBase').addEventListener('click', () => {
-      const v = baseInput.value.trim();
-      if (!v) return;
-      localStorage.setItem('tm_api_base', v);
-      refreshCur();
-      alert('Saved');
-    });
-    document.getElementById('resetApiBase').addEventListener('click', () => {
-      localStorage.removeItem('tm_api_base');
-      baseInput.value = '';
-      refreshCur();
-    });
     document.getElementById('clearSession').addEventListener('click', () => {
       if (!confirm('Clear local app data?')) return;
       localStorage.removeItem('tm_user');
