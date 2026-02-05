@@ -24,13 +24,12 @@
           ${isAuthed ? '<li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>' : ''}
           ${isAuthed ? '<li class="nav-item"><a class="nav-link" href="tasks.html">Tasks</a></li>' : ''}
           ${isAuthed ? '<li class="nav-item"><a class="nav-link" href="completed.html">Completed</a></li>' : ''}
-          ${isAdmin ? '<li class="nav-item"><a class="nav-link" href="admin.html">📊 Admin</a></li>' : ''}
-          ${isAdmin ? '<li class="nav-item"><a class="nav-link" href="users.html">Users</a></li>' : ''}
           ${isAdmin ? '<li class="nav-item"><a class="nav-link" href="projects.html">Projects</a></li>' : ''}
           ${isAdmin ? '<li class="nav-item"><a class="nav-link" href="categories.html">Categories</a></li>' : ''}
-          ${isAuthed ? '<li class="nav-item"><a class="nav-link" href="settings.html">Settings</a></li>' : ''}
         </ul>
-        <div class="d-flex gap-2 align-items-center">
+        <div class="d-flex gap-2 align-items-center ms-auto">
+          ${isAdmin ? '<a class="nav-link" href="admin.html">📊 Admin</a>' : ''}
+          ${isAuthed ? '<a class="nav-link" href="settings.html">⚙️ Settings</a>' : ''}
           ${isAuthed ? `<span class="text-muted small">Signed in as</span> <span class="badge text-bg-primary">${user.user_name}</span>` : ''}
           ${isAuthed ? `<button id="tmLogoutBtn" class="btn btn-outline-danger btn-sm">Logout</button>` : `
             <a class="btn btn-outline-primary btn-sm" href="login.html">Login</a>
