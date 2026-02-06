@@ -17,12 +17,24 @@ async function getTasks(req, res) {
     query.user = req.query.userId || req.query.user_id;
   }
   
-  const tasks = await Task.find(query).sort({ createdAt: -1 });
+  // Filter by category if provided
+  if (req.query.categoryId || req.query.category_id) {
+    query.category = req.query.categoryId || req.query.category_id;
+  }
+  
+  const tasks = await Task.find(query)
+    .populate('category', 'name color')
+    .populate('project', 'name')
+    .populate('user', 'userName')
+    .sort({ createdAt: -1 });
   return res.json({ data: tasks.map(toTaskResponse) });
 }
 
 async function getTaskById(req, res) {
-  const task = await Task.findById(req.params.id);
+  const task = await Task.findById(req.params.id)
+    .populate('category', 'name color')
+    .populate('project', 'name')
+    .populate('user', 'userName');
   if (!task) {
     return res.status(404).json({ error: 'Task not found' });
   }
@@ -59,6 +71,7 @@ async function createTask(req, res) {
     deadline: req.body.deadline,
     user: userId,
     project: projectId || undefined,
+    category: req.body.category || req.body.category_id || undefined,
   });
 
   return res.status(201).json({ data: toTaskResponse(task) });
@@ -90,6 +103,9 @@ async function updateTask(req, res) {
   if (req.body.status !== undefined) updates.status = req.body.status;
   if (req.body.priority !== undefined) updates.priority = req.body.priority;
   if (req.body.deadline !== undefined) updates.deadline = req.body.deadline;
+  if (req.body.category !== undefined || req.body.category_id !== undefined) {
+    updates.category = req.body.category || req.body.category_id || null;
+  }
 
   if (Object.keys(updates).length === 0) {
     return res.status(400).json({ error: 'No valid fields to update' });
@@ -115,7 +131,11 @@ async function deleteTask(req, res) {
 
 async function getTasksByUser(req, res) {
   const userId = req.params.userId;
-  const tasks = await Task.find({ user: userId }).sort({ createdAt: -1 });
+  const tasks = await Task.find({ user: userId })
+    .populate('category', 'name color')
+    .populate('project', 'name')
+    .populate('user', 'userName')
+    .sort({ createdAt: -1 });
   return res.json({ data: tasks.map(toTaskResponse) });
 }
 

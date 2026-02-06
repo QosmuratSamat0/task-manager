@@ -55,6 +55,12 @@
                 </select>
               </div>
               <div class="mb-3">
+                <label class="form-label">Category</label>
+                <select class="form-select" name="category">
+                  <option value="">No Category</option>
+                </select>
+              </div>
+              <div class="mb-3">
                 <label class="form-label">Deadline</label>
                 <input type="datetime-local" class="form-control" name="deadline">
               </div>
@@ -72,12 +78,19 @@
               <h5 class="card-title mb-0">Your Tasks</h5>
               <button id="refreshBtn" class="btn btn-outline-primary btn-sm">Refresh</button>
             </div>
+            <div class="mb-3">
+              <label class="form-label small">Filter by Category:</label>
+              <select class="form-select form-select-sm" id="categoryFilter">
+                <option value="">All Tasks</option>
+              </select>
+            </div>
             <div class="table-responsive">
               <table class="table align-middle">
                 <thead>
                 <tr>
                   <th>Title</th>
                   <th>Project</th>
+                  <th>Category</th>
                   <th>Status</th>
                   <th>Priority</th>
                   <th>Deadline</th>

@@ -43,9 +43,10 @@ window.TM_API = (function () {
   // Tasks
   const createTask = (payload) => http('POST', '/tasks/', payload);
   const listAllTasks = () => http('GET', '/tasks/all');
-  const getTaskById = (id) => http('GET', `/tasks/${id}`); // backend param named user_id, but it is task id
+  const getTaskById = (id) => http('GET', `/tasks/${id}`);
   const deleteTaskById = (id) => http('DELETE', `/tasks/${id}`);
   const listTasksByUser = (userId) => http('GET', `/tasks/by-user/${encodeURIComponent(userId)}`);
+  const listTasksByCategory = (categoryId) => http('GET', `/tasks/?category_id=${encodeURIComponent(categoryId)}`);
   const updateTask = (id, payload) => http('PUT', `/tasks/${encodeURIComponent(id)}`, payload);
 
   // Projects (admin)
@@ -76,6 +77,7 @@ window.TM_API = (function () {
     createTask,
     listAllTasks,
     listTasksByUser,
+    listTasksByCategory,
     getTaskById,
     deleteTaskById,
     updateTask,
