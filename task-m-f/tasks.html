@@ -122,26 +122,29 @@
       const empty = document.getElementById('emptyState');
       const categoryFilter = document.getElementById('categoryFilter');
 
-      async function loadCategories() {
-        try {
-          const res = await window.TM_API.listCategories();
-          const categories = (res && res.data) || [];
-          const select = form.category;
-          select.innerHTML = '<option value="">No Category</option>';
-          categoryFilter.innerHTML = '<option value="">All Tasks</option>';
-          for (const c of categories) {
-            const opt = document.createElement('option');
-            opt.value = c._id;
-            opt.textContent = c.name;
-            select.appendChild(opt);
-            
-            const filterOpt = document.createElement('option');
-            filterOpt.value = c._id;
-            filterOpt.textContent = c.name;
-            categoryFilter.appendChild(filterOpt);
-          }
-        } catch (err) {
-          console.error('Failed to load categories:', err);
+      // Fixed categories list
+      const fixedCategories = [
+        { name: 'Work', color: '#007bff' },
+        { name: 'Study', color: '#28a745' },
+        { name: 'Personal', color: '#ffc107' },
+        { name: 'Shopping', color: '#e83e8c' },
+        { name: 'Ideas', color: '#17a2b8' }
+      ];
+
+      function loadCategories() {
+        const select = form.category;
+        select.innerHTML = '<option value="">No Category</option>';
+        categoryFilter.innerHTML = '<option value="">All Tasks</option>';
+        for (const c of fixedCategories) {
+          const opt = document.createElement('option');
+          opt.value = c.name;
+          opt.textContent = c.name;
+          select.appendChild(opt);
+          
+          const filterOpt = document.createElement('option');
+          filterOpt.value = c.name;
+          filterOpt.textContent = c.name;
+          categoryFilter.appendChild(filterOpt);
         }
       }
 
@@ -185,13 +188,40 @@
       function displayTasks(tasks) {
         rows.innerHTML = '';
         const filterId = categoryFilter.value;
-        const filtered = filterId ? tasks.filter(t => t.category && t.category._id === filterId) : tasks;
+        const filtered = filterId ? tasks.filter(t => {
+          // Check by category name (string) or by category object name
+          if (t.category && typeof t.category === 'string') {
+            return t.category === filterId;
+          }
+          if (t.category && t.category.name) {
+            return t.category.name === filterId;
+          }
+          return false;
+        }) : tasks;
         
         for (const t of filtered) {
           const deadline = t.deadline ? new Date(t.deadline).toLocaleString() : '—';
-          const categoryBadge = t.category 
-            ? `<span class="badge" style="background-color: ${t.category.color || '#007bff'}">${t.category.name}</span>` 
+          
+          // Get category color and name
+          let catName = 'None';
+          let catColor = '#6c757d';
+          
+          if (t.category) {
+            if (typeof t.category === 'string') {
+              catName = t.category;
+              const cat = fixedCategories.find(c => c.name === t.category);
+              catColor = cat ? cat.color : '#6c757d';
+            } else if (t.category.name) {
+              catName = t.category.name;
+              const cat = fixedCategories.find(c => c.name === t.category.name);
+              catColor = cat ? cat.color : (t.category.color || '#6c757d');
+            }
+          }
+          
+          const categoryBadge = catName !== 'None' 
+            ? `<span class="badge" style="background-color: ${catColor}">${catName}</span>` 
             : '<span class="badge text-bg-secondary">None</span>';
+            
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td>
