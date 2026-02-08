@@ -114,11 +114,36 @@
   <script src="assets/api.js"></script>
   <script>
     const user = tmRequireUser();
+    let allTasks = [];
     if (user) {
       const form = document.getElementById('taskForm');
       const errorBox = document.getElementById('taskError');
       const rows = document.getElementById('taskRows');
       const empty = document.getElementById('emptyState');
+      const categoryFilter = document.getElementById('categoryFilter');
+
+      async function loadCategories() {
+        try {
+          const res = await window.TM_API.listCategories();
+          const categories = (res && res.data) || [];
+          const select = form.category;
+          select.innerHTML = '<option value="">No Category</option>';
+          categoryFilter.innerHTML = '<option value="">All Tasks</option>';
+          for (const c of categories) {
+            const opt = document.createElement('option');
+            opt.value = c._id;
+            opt.textContent = c.name;
+            select.appendChild(opt);
+            
+            const filterOpt = document.createElement('option');
+            filterOpt.value = c._id;
+            filterOpt.textContent = c.name;
+            categoryFilter.appendChild(filterOpt);
+          }
+        } catch (err) {
+          console.error('Failed to load categories:', err);
+        }
+      }
 
       async function loadProjects() {
         try {
@@ -128,7 +153,7 @@
           select.innerHTML = '<option value="">No Project</option>';
           for (const p of projects) {
             const opt = document.createElement('option');
-            opt.value = p.id;
+            opt.value = p._id;
             opt.textContent = p.name;
             select.appendChild(opt);
           }

@@ -15,6 +15,26 @@
       <button class="btn btn-outline-secondary btn-sm" onclick="tmToggleTheme()">Toggle Theme</button>
     </div>
 
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats-pane" type="button" aria-selected="true">Dashboard</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="projects-tab" data-bs-toggle="tab" data-bs-target="#projects-pane" type="button" aria-selected="false">Projects</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="categories-tab" data-bs-toggle="tab" data-bs-target="#categories-pane" type="button" aria-selected="false">Categories</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users-pane" type="button" aria-selected="false">Users</button>
+      </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="adminTabContent">
+      <!-- Dashboard Tab -->
+      <div class="tab-pane fade show active" id="stats-pane">
     <div class="row g-4">
       <!-- Stats Cards -->
       <div class="col-12 col-md-3">
@@ -147,6 +167,148 @@
           </div>
         </div>
       </div>
+      </div>
+
+      <!-- Projects Tab -->
+      <div class="tab-pane fade" id="projects-pane">
+        <div class="row g-4">
+          <div class="col-12 col-lg-5">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title">Create Project</h5>
+                <form id="projectForm" novalidate>
+                  <div class="mb-3">
+                    <label class="form-label">Project Name</label>
+                    <input type="text" class="form-control" name="name" required maxlength="200">
+                    <div class="invalid-feedback">Project name is required</div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" name="description" rows="3" maxlength="1000"></textarea>
+                  </div>
+                  <button class="btn btn-primary" type="submit">Create Project</button>
+                  <div id="projectError" class="form-error mt-2" style="display:none;"></div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-7">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h5 class="card-title mb-0">All Projects</h5>
+                  <button id="projectRefreshBtn" class="btn btn-outline-primary btn-sm">Refresh</button>
+                </div>
+                <div class="table-responsive">
+                  <table class="table align-middle">
+                    <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Description</th>
+                      <th>Created</th>
+                      <th></th>
+                    </tr>
+                    </thead>
+                    <tbody id="projectRows"></tbody>
+                  </table>
+                </div>
+                <div id="emptyProjects" class="text-muted" style="display:none;">No projects yet.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categories Tab -->
+      <div class="tab-pane fade" id="categories-pane">
+        <div class="row g-4">
+          <div class="col-12 col-lg-5">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title">Create Category</h5>
+                <form id="categoryForm" novalidate>
+                  <div class="mb-3">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-control" name="name" required maxlength="120">
+                    <div class="invalid-feedback">Name is required</div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" name="description" rows="3" maxlength="1000"></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Color</label>
+                    <div class="input-group">
+                      <input type="color" class="form-control form-control-color" name="color" value="#007bff" title="Choose color">
+                      <input type="text" class="form-control" name="colorText" placeholder="#007bff" readonly>
+                    </div>
+                  </div>
+                  <button class="btn btn-primary" type="submit">Add Category</button>
+                  <div id="categoryError" class="form-error mt-2" style="display:none;"></div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-7">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h5 class="card-title mb-0">All Categories</h5>
+                  <button id="categoryRefreshBtn" class="btn btn-outline-primary btn-sm">Refresh</button>
+                </div>
+                <div class="table-responsive">
+                  <table class="table align-middle">
+                    <thead>
+                    <tr>
+                      <th>Color</th>
+                      <th>Name</th>
+                      <th>Description</th>
+                      <th>Created</th>
+                      <th></th>
+                    </tr>
+                    </thead>
+                    <tbody id="categoryRows"></tbody>
+                  </table>
+                </div>
+                <div id="emptyCategories" class="text-muted" style="display:none;">No categories yet.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users Tab -->
+      <div class="tab-pane fade" id="users-pane">
+        <div class="row g-4">
+          <div class="col-12">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h5 class="card-title mb-0">All Users</h5>
+                  <button id="userRefreshBtn" class="btn btn-outline-primary btn-sm">Refresh</button>
+                </div>
+                <div class="table-responsive">
+                  <table class="table align-middle">
+                    <thead>
+                    <tr>
+                      <th>Username</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                      <th>Created</th>
+                      <th></th>
+                    </tr>
+                    </thead>
+                    <tbody id="userRows"></tbody>
+                  </table>
+                </div>
+                <div id="emptyUsers" class="text-muted" style="display:none;">No users yet.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
   <div id="app-footer"></div>
@@ -159,87 +321,335 @@
     function initAdmin() {
       const user = tmRequireUser();
       if (user && user.role === 'admin') {
+        // ====== STATS/DASHBOARD TAB ======
         async function loadStats() {
-        try {
-          const res = await window.TM_API.getStats();
-          const stats = res.data;
+          try {
+            const res = await window.TM_API.getStats();
+            const stats = res.data;
 
-          // Update summary cards
-          document.getElementById('totalUsers').textContent = stats.totalUsers;
-          document.getElementById('totalTasks').textContent = stats.totalTasks;
-          document.getElementById('totalProjects').textContent = stats.totalProjects;
-          document.getElementById('lastUpdated').textContent = new Date(stats.timestamp).toLocaleString();
+            // Update summary cards
+            document.getElementById('totalUsers').textContent = stats.totalUsers;
+            document.getElementById('totalTasks').textContent = stats.totalTasks;
+            document.getElementById('totalProjects').textContent = stats.totalProjects;
+            document.getElementById('lastUpdated').textContent = new Date(stats.timestamp).toLocaleString();
 
-          // Task Status Distribution
-          const statusHtml = stats.tasksByStatus.map(s => `
-            <div class="d-flex justify-content-between mb-2">
-              <span>${s._id || 'unknown'}</span>
-              <span class="badge text-bg-info">${s.count}</span>
-            </div>
-          `).join('');
-          document.getElementById('tasksByStatus').innerHTML = statusHtml || '<div class="text-muted">No data</div>';
+            // Task Status Distribution
+            const statusHtml = stats.tasksByStatus.map(s => `
+              <div class="d-flex justify-content-between mb-2">
+                <span>${s._id || 'unknown'}</span>
+                <span class="badge text-bg-info">${s.count}</span>
+              </div>
+            `).join('');
+            document.getElementById('tasksByStatus').innerHTML = statusHtml || '<div class="text-muted">No data</div>';
 
-          // Task Priority Distribution
-          const priorityHtml = stats.tasksByPriority.map(p => `
-            <div class="d-flex justify-content-between mb-2">
-              <span>${p._id || 'unknown'}</span>
-              <span class="badge text-bg-info">${p.count}</span>
-            </div>
-          `).join('');
-          document.getElementById('tasksByPriority').innerHTML = priorityHtml || '<div class="text-muted">No data</div>';
+            // Task Priority Distribution
+            const priorityHtml = stats.tasksByPriority.map(p => `
+              <div class="d-flex justify-content-between mb-2">
+                <span>${p._id || 'unknown'}</span>
+                <span class="badge text-bg-info">${p.count}</span>
+              </div>
+            `).join('');
+            document.getElementById('tasksByPriority').innerHTML = priorityHtml || '<div class="text-muted">No data</div>';
 
-          // Recent Tasks
-          const taskRows = document.getElementById('recentTasks');
-          taskRows.innerHTML = '';
-          if (stats.recentTasks.length === 0) {
-            document.getElementById('emptyTasks').style.display = 'block';
-          } else {
-            stats.recentTasks.forEach(t => {
-              const tr = document.createElement('tr');
-              tr.innerHTML = `
-                <td>
-                  <div class="fw-semibold">${t.title || '(untitled)'}</div>
-                  <div class="small text-muted">${t.description || ''}</div>
-                </td>
-                <td>${t.user && t.user.userName ? t.user.userName : '-'}</td>
-                <td><span class="badge text-bg-secondary">${t.project && t.project.name ? t.project.name : '-'}</span></td>
-                <td><span class="badge text-bg-warning">${t.status}</span></td>
-                <td><span class="badge text-bg-info">${t.priority}</span></td>
-                <td><small>${new Date(t.createdAt).toLocaleString()}</small></td>
-              `;
-              taskRows.appendChild(tr);
-            });
+            // Recent Tasks
+            const taskRows = document.getElementById('recentTasks');
+            taskRows.innerHTML = '';
+            if (stats.recentTasks.length === 0) {
+              document.getElementById('emptyTasks').style.display = 'block';
+            } else {
+              stats.recentTasks.forEach(t => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                  <td>
+                    <div class="fw-semibold">${t.title || '(untitled)'}</div>
+                    <div class="small text-muted">${t.description || ''}</div>
+                  </td>
+                  <td>${t.user && t.user.userName ? t.user.userName : '-'}</td>
+                  <td><span class="badge text-bg-secondary">${t.project && t.project.name ? t.project.name : '-'}</span></td>
+                  <td><span class="badge text-bg-warning">${t.status}</span></td>
+                  <td><span class="badge text-bg-info">${t.priority}</span></td>
+                  <td><small>${new Date(t.createdAt).toLocaleString()}</small></td>
+                `;
+                taskRows.appendChild(tr);
+              });
+            }
+
+            // Recent Users
+            const userRows = document.getElementById('recentUsers');
+            userRows.innerHTML = '';
+            if (stats.recentUsers.length === 0) {
+              document.getElementById('emptyUsers').style.display = 'block';
+            } else {
+              stats.recentUsers.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                  <td><span class="fw-semibold">${u.userName}</span></td>
+                  <td>${u.email}</td>
+                  <td><span class="badge text-bg-primary">${u.role}</span></td>
+                  <td><small>${new Date(u.createdAt).toLocaleString()}</small></td>
+                `;
+                userRows.appendChild(tr);
+              });
+            }
+          } catch (err) {
+            tmToast('Failed to load stats', 'error');
+            console.error(err);
           }
-
-          // Recent Users
-          const userRows = document.getElementById('recentUsers');
-          userRows.innerHTML = '';
-          if (stats.recentUsers.length === 0) {
-            document.getElementById('emptyUsers').style.display = 'block';
-          } else {
-            stats.recentUsers.forEach(u => {
-              const tr = document.createElement('tr');
-              tr.innerHTML = `
-                <td><span class="fw-semibold">${u.userName}</span></td>
-                <td>${u.email}</td>
-                <td><span class="badge text-bg-primary">${u.role}</span></td>
-                <td><small>${new Date(u.createdAt).toLocaleString()}</small></td>
-              `;
-              userRows.appendChild(tr);
-            });
-          }
-        } catch (err) {
-          tmToast('Failed to load stats', 'error');
-          console.error(err);
         }
-      }
 
-      loadStats();
-      // Refresh stats every 30 seconds
-      setInterval(loadStats, 30000);
-    } else {
-      window.location.href = 'login.html';
-    }
+        // ====== PROJECTS TAB ======
+        const projectForm = document.getElementById('projectForm');
+        const projectErrorBox = document.getElementById('projectError');
+        const projectRows = document.getElementById('projectRows');
+        const emptyProjects = document.getElementById('emptyProjects');
+        let currentProjectId = null;
+
+        async function loadProjects() {
+          projectRows.innerHTML = '';
+          try {
+            const res = await window.TM_API.listProjects();
+            const list = (res && res.data) || [];
+            if (list.length === 0) {
+              emptyProjects.style.display = 'block';
+              return;
+            }
+            emptyProjects.style.display = 'none';
+            for (const p of list) {
+              const created = p.createdAt ? new Date(p.createdAt).toLocaleString() : '—';
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td class="fw-semibold">${p.name || '(unnamed)'}</td>
+                <td class="text-muted">${p.description || ''}</td>
+                <td><small>${created}</small></td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary me-1" onclick="editProject('${p._id}', ${JSON.stringify(p).replace(/'/g, '&apos;')})">Edit</button>
+                  <button class="btn btn-sm btn-outline-danger" onclick="deleteProject('${p._id}')">Delete</button>
+                </td>
+              `;
+              projectRows.appendChild(tr);
+            }
+          } catch (err) {
+            tmToast('Failed to load projects', 'error');
+            console.error(err);
+          }
+        }
+
+        window.deleteProject = async (id) => {
+          if (!confirm('Delete this project? All associated tasks will be orphaned.')) return;
+          try {
+            await window.TM_API.deleteProject(id);
+            tmToast('Project deleted', 'success');
+            loadProjects();
+            loadStats();
+          } catch (err) {
+            tmToast('Failed to delete project', 'error');
+            console.error(err);
+          }
+        };
+
+        window.editProject = (id, project) => {
+          currentProjectId = id;
+          projectForm.name.value = project.name || '';
+          projectForm.description.value = project.description || '';
+          document.querySelector('#projectForm button[type="submit"]').textContent = 'Update Project';
+          projectForm.scrollIntoView({ behavior: 'smooth' });
+        };
+
+        projectForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          projectErrorBox.style.display = 'none';
+          if (!tmValidate(projectForm)) return;
+
+          const payload = {
+            name: projectForm.name.value.trim(),
+            description: projectForm.description.value.trim()
+          };
+
+          try {
+            if (currentProjectId) {
+              await window.TM_API.updateProject(currentProjectId, payload);
+              tmToast('Project updated', 'success');
+              currentProjectId = null;
+              document.querySelector('#projectForm button[type="submit"]').textContent = 'Create Project';
+            } else {
+              await window.TM_API.createProject(payload);
+              tmToast('Project created', 'success');
+            }
+            projectForm.reset();
+            loadProjects();
+            loadStats();
+          } catch (err) {
+            projectErrorBox.style.display = 'block';
+            projectErrorBox.textContent = err.message || 'Failed to save project';
+            console.error(err);
+          }
+        });
+
+        document.getElementById('projectRefreshBtn').addEventListener('click', loadProjects);
+
+        // ====== CATEGORIES TAB ======
+        const categoryForm = document.getElementById('categoryForm');
+        const categoryErrorBox = document.getElementById('categoryError');
+        const categoryRows = document.getElementById('categoryRows');
+        const emptyCategories = document.getElementById('emptyCategories');
+        const colorInput = categoryForm.color;
+        const colorText = categoryForm.colorText;
+        let currentCategoryId = null;
+
+        // Update color text when color picker changes
+        colorInput.addEventListener('change', (e) => {
+          colorText.value = e.target.value;
+        });
+
+        async function loadCategories() {
+          categoryRows.innerHTML = '';
+          try {
+            const res = await window.TM_API.listCategories();
+            const list = (res && res.data) || [];
+            if (list.length === 0) {
+              emptyCategories.style.display = 'block';
+              return;
+            }
+            emptyCategories.style.display = 'none';
+            for (const c of list) {
+              const created = c.createdAt ? new Date(c.createdAt).toLocaleString() : '—';
+              const tr = document.createElement('tr');
+              const colorSwatch = `<div style="width: 24px; height: 24px; background-color: ${c.color || '#ccc'}; border-radius: 4px;"></div>`;
+              tr.innerHTML = `
+                <td>${colorSwatch}</td>
+                <td class="fw-semibold">${c.name || '(unnamed)'}</td>
+                <td class="text-muted">${c.description || ''}</td>
+                <td><small>${created}</small></td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary me-1" onclick="editCategory('${c._id}', ${JSON.stringify(c).replace(/'/g, '&apos;')})">Edit</button>
+                  <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory('${c._id}')">Delete</button>
+                </td>
+              `;
+              categoryRows.appendChild(tr);
+            }
+          } catch (err) {
+            tmToast('Failed to load categories', 'error');
+            console.error(err);
+          }
+        }
+
+        window.deleteCategory = async (id) => {
+          if (!confirm('Delete this category?')) return;
+          try {
+            await window.TM_API.deleteCategory(id);
+            tmToast('Category deleted', 'success');
+            loadCategories();
+            loadStats();
+          } catch (err) {
+            tmToast('Failed to delete category', 'error');
+            console.error(err);
+          }
+        };
+
+        window.editCategory = (id, category) => {
+          currentCategoryId = id;
+          categoryForm.name.value = category.name || '';
+          categoryForm.description.value = category.description || '';
+          colorInput.value = category.color || '#007bff';
+          colorText.value = category.color || '#007bff';
+          document.querySelector('#categoryForm button[type="submit"]').textContent = 'Update Category';
+          categoryForm.scrollIntoView({ behavior: 'smooth' });
+        };
+
+        categoryForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          categoryErrorBox.style.display = 'none';
+          if (!tmValidate(categoryForm)) return;
+
+          const payload = {
+            name: categoryForm.name.value.trim(),
+            description: categoryForm.description.value.trim(),
+            color: colorInput.value
+          };
+
+          try {
+            if (currentCategoryId) {
+              await window.TM_API.updateCategory(currentCategoryId, payload);
+              tmToast('Category updated', 'success');
+              currentCategoryId = null;
+              document.querySelector('#categoryForm button[type="submit"]').textContent = 'Add Category';
+            } else {
+              await window.TM_API.createCategory(payload);
+              tmToast('Category created', 'success');
+            }
+            categoryForm.reset();
+            colorText.value = '#007bff';
+            loadCategories();
+            loadStats();
+          } catch (err) {
+            categoryErrorBox.style.display = 'block';
+            categoryErrorBox.textContent = err.message || 'Failed to save category';
+            console.error(err);
+          }
+        });
+
+        document.getElementById('categoryRefreshBtn').addEventListener('click', loadCategories);
+
+        // ====== USERS TAB ======
+        const userRows2 = document.getElementById('userRows');
+        const emptyUsers = document.getElementById('emptyUsers');
+
+        async function loadAllUsers() {
+          userRows2.innerHTML = '';
+          try {
+            const res = await window.TM_API.listUsers();
+            const list = (res && res.data) || [];
+            if (list.length === 0) {
+              emptyUsers.style.display = 'block';
+              return;
+            }
+            emptyUsers.style.display = 'none';
+            for (const u of list) {
+              const created = u.createdAt ? new Date(u.createdAt).toLocaleString() : '—';
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td class="fw-semibold">${u.userName}</td>
+                <td>${u.email}</td>
+                <td><span class="badge text-bg-${u.role === 'admin' ? 'danger' : 'secondary'}">${u.role}</span></td>
+                <td><small>${created}</small></td>
+                <td>
+                  ${u.role !== 'admin' ? `<button class="btn btn-sm btn-outline-danger" onclick="deleteUserAccount('${u.userName}')">Delete</button>` : '<span class="text-muted">—</span>'}
+                </td>
+              `;
+              userRows2.appendChild(tr);
+            }
+          } catch (err) {
+            tmToast('Failed to load users', 'error');
+            console.error(err);
+          }
+        }
+
+        window.deleteUserAccount = async (userName) => {
+          if (!confirm('Delete this user? This action cannot be undone.')) return;
+          try {
+            await window.TM_API.deleteUser(userName);
+            tmToast('User deleted', 'success');
+            loadAllUsers();
+            loadStats();
+          } catch (err) {
+            tmToast('Failed to delete user', 'error');
+            console.error(err);
+          }
+        };
+
+        document.getElementById('userRefreshBtn').addEventListener('click', loadAllUsers);
+
+        // Initial load
+        loadStats();
+        loadProjects();
+        loadCategories();
+        loadAllUsers();
+
+        // Refresh stats every 30 seconds
+        setInterval(loadStats, 30000);
+      } else {
+        window.location.href = 'login.html';
+      }
     }
 
     // Wait for scripts to load, then initialize
