@@ -173,46 +173,49 @@
           }
           empty.style.display = 'none';
           for (const t of list) {
-            const deadline = t.deadline ? new Date(t.deadline).toLocaleString() : '�';
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td>
-                <div class="fw-semibold">${t.title || '(untitled)'}</div>
-                <div class="small text-muted">${t.description || ''}</div>
-              </td>
-              <td>
-                <span class="badge text-bg-info">${(t.project && t.project.name) || '-'}</span>
-              </td>
-              <td>
-                <select class="form-select form-select-sm" data-edit-status="${t.id}">
-                  <option value="todo">To Do</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="done">Done</option>
-                </select>
-              </td>
-              <td>
-                <select class="form-select form-select-sm" data-edit-priority="${t.id}">
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                </select>
-              </td>
-              <td>${deadline}</td>
-              <td class="text-end">
-                <div class="d-flex gap-2 justify-content-end">
-                  <button class="btn btn-sm btn-primary" data-update="${t.id}">Update</button>
-                  <button class="btn btn-sm btn-outline-danger" data-del="${t.id}">Delete</button>
-                </div>
-              </td>
-            `;
-            rows.appendChild(tr);
-            const stSel = tr.querySelector(`[data-edit-status="${t.id}"]`);
-            const prSel = tr.querySelector(`[data-edit-priority="${t.id}"]`);
-            if (stSel) stSel.value = (t.status || 'todo');
-            if (prSel) prSel.value = (String(t.priority || 'medium')).toLowerCase();
+            allTasks = list;
+            displayTasks(list);
+            return;
           }
         } catch (err) {
-          rows.innerHTML = `<tr><td colspan="6" class="text-danger">Failed to load tasks</td></tr>`;
+          rows.innerHTML = `<tr><td colspan="7" class="text-danger">Failed to load tasks</td></tr>`;
+        }
+      }
+
+      function displayTasks(tasks) {
+        rows.innerHTML = '';
+        const filterId = categoryFilter.value;
+        const filtered = filterId ? tasks.filter(t => t.category && t.category._id === filterId) : tasks;
+        
+        for (const t of filtered) {
+          const deadline = t.deadline ? new Date(t.deadline).toLocaleString() : '—';
+          const categoryBadge = t.category 
+            ? `<span class="badge" style="background-color: ${t.category.color || '#007bff'}">${t.category.name}</span>` 
+            : '<span class="badge text-bg-secondary">None</span>';
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>
+              <div class="fw-semibold">${t.title || '(untitled)'}</div>
+              <div class="small text-muted">${t.description || ''}</div>
+            </td>
+            <td>
+              <span class="badge text-bg-info">${(t.project && t.project.name) || '-'}</span>
+            </td>
+            <td>
+              ${categoryBadge}
+            </td>
+            <td>
+              <span class="badge text-bg-warning">${t.status || 'todo'}</span>
+            </td>
+            <td>
+              <span class="badge text-bg-secondary">${t.priority || 'medium'}</span>
+            </td>
+            <td><small>${deadline}</small></td>
+            <td class="text-end">
+              <button class="btn btn-sm btn-outline-danger" data-del="${t._id}">Delete</button>
+            </td>
+          `;
+          rows.appendChild(tr);
         }
       }
 
@@ -221,24 +224,15 @@
         tmToast('Tasks refreshed', 'info', 1200);
       });
 
+      categoryFilter.addEventListener('change', () => {
+        displayTasks(allTasks);
+      )};
+
       document.addEventListener('click', async (e) => {
-        const upd = e.target.closest('button[data-update]');
-        if (upd) {
-          const id = upd.getAttribute('data-update');
-          const st = document.querySelector(`[data-edit-status="${id}"]`).value;
-          const pr = document.querySelector(`[data-edit-priority="${id}"]`).value;
-          try {
-            await TM_API.updateTask(id, { status: st, priority: pr });
-            await loadTasks();
-            tmToast('Task updated', 'success');
-          } catch (_) {
-            tmToast('Failed to update task', 'error');
-          }
-          return;
-        }
         const del = e.target.closest('button[data-del]');
         if (del) {
           const id = del.getAttribute('data-del');
+          if (!confirm('Delete this task?')) return;
           try {
             await TM_API.deleteTaskById(id);
             await loadTasks();
@@ -262,6 +256,8 @@
         };
         const projectId = form.project.value.trim();
         if (projectId) payload.project = projectId;
+        const categoryId = form.category.value.trim();
+        if (categoryId) payload.category_id = categoryId;
         const d = tmToISO(form.deadline.value);
         if (d) payload.deadline = d;
         try {
@@ -279,6 +275,7 @@
       });
 
       loadProjects();
+      loadCategories();
       loadTasks();
     }
   </script>
