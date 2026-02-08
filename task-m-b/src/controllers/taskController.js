@@ -23,7 +23,6 @@ async function getTasks(req, res) {
   }
   
   const tasks = await Task.find(query)
-    .populate('category', 'name color')
     .populate('project', 'name')
     .populate('user', 'userName')
     .sort({ createdAt: -1 });
@@ -32,7 +31,6 @@ async function getTasks(req, res) {
 
 async function getTaskById(req, res) {
   const task = await Task.findById(req.params.id)
-    .populate('category', 'name color')
     .populate('project', 'name')
     .populate('user', 'userName');
   if (!task) {
