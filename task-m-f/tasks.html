@@ -231,6 +231,11 @@
             ? `<span class="badge" style="background-color: ${catColor}">${catName}</span>` 
             : '<span class="badge text-bg-secondary">None</span>';
             
+          const taskId = t.id || t._id;
+          const statusColors = { todo: 'warning', in_progress: 'primary', done: 'success' };
+          const statusLabels = { todo: 'To Do', in_progress: 'In Progress', done: 'Done' };
+          const statusColor = statusColors[t.status] || 'warning';
+          
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td>
@@ -244,14 +249,18 @@
               ${categoryBadge}
             </td>
             <td>
-              <span class="badge text-bg-warning">${t.status || 'todo'}</span>
+              <select class="form-select form-select-sm status-select" data-task-id="${taskId}" style="min-width:110px;font-size:0.8rem;">
+                <option value="todo" ${t.status === 'todo' ? 'selected' : ''}>To Do</option>
+                <option value="in_progress" ${t.status === 'in_progress' ? 'selected' : ''}>In Progress</option>
+                <option value="done" ${t.status === 'done' ? 'selected' : ''}>Done</option>
+              </select>
             </td>
             <td>
               <span class="badge text-bg-secondary">${t.priority || 'medium'}</span>
             </td>
             <td><small>${deadline}</small></td>
             <td class="text-end">
-              <button class="btn btn-sm btn-outline-danger" data-del="${t.id || t._id}">Delete</button>
+              <button class="btn btn-sm btn-outline-danger" data-del="${taskId}">Delete</button>
             </td>
           `;
           rows.appendChild(tr);
@@ -265,6 +274,27 @@
 
       categoryFilter.addEventListener('change', () => {
         displayTasks(allTasks);
+      });
+
+      document.addEventListener('change', async (e) => {
+        const sel = e.target.closest('.status-select');
+        if (sel) {
+          const taskId = sel.dataset.taskId;
+          const newStatus = sel.value;
+          sel.disabled = true;
+          try {
+            await TM_API.updateTask(taskId, { status: newStatus });
+            // Update local data
+            const task = allTasks.find(t => (t.id || t._id) === taskId);
+            if (task) task.status = newStatus;
+            tmToast('Status updated', 'success', 1200);
+          } catch (err) {
+            tmToast('Failed to update status', 'error');
+            await loadTasks();
+          } finally {
+            sel.disabled = false;
+          }
+        }
       });
 
       document.addEventListener('click', async (e) => {
