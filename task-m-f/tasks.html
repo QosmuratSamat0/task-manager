@@ -180,11 +180,8 @@
             return;
           }
           empty.style.display = 'none';
-          for (const t of list) {
-            allTasks = list;
-            displayTasks(list);
-            return;
-          }
+          allTasks = list;
+          displayTasks(list);
         } catch (err) {
           rows.innerHTML = `<tr><td colspan="7" class="text-danger">Failed to load tasks</td></tr>`;
         }
@@ -261,7 +258,7 @@
 
       categoryFilter.addEventListener('change', () => {
         displayTasks(allTasks);
-      )};
+      });
 
       document.addEventListener('click', async (e) => {
         const del = e.target.closest('button[data-del]');

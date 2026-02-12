@@ -165,6 +165,7 @@
         </div>
       </div>
       </div>
+    </div><!-- /stats-pane -->
 
       <!-- Projects Tab -->
       <div class="tab-pane fade" id="projects-pane">
@@ -241,7 +242,7 @@
                     <tbody id="userRows"></tbody>
                   </table>
                 </div>
-                <div id="emptyUsers" class="text-muted" style="display:none;">No users yet.</div>
+                <div id="emptyUsersAdmin" class="text-muted" style="display:none;">No users yet.</div>
               </div>
             </div>
           </div>
@@ -427,7 +428,7 @@
 
         // ====== USERS TAB ======
         const userRows2 = document.getElementById('userRows');
-        const emptyUsers = document.getElementById('emptyUsers');
+        const emptyUsersAdmin = document.getElementById('emptyUsersAdmin');
 
         async function loadAllUsers() {
           userRows2.innerHTML = '';
@@ -435,10 +436,10 @@
             const res = await window.TM_API.listUsers();
             const list = (res && res.data) || [];
             if (list.length === 0) {
-              emptyUsers.style.display = 'block';
+              emptyUsersAdmin.style.display = 'block';
               return;
             }
-            emptyUsers.style.display = 'none';
+            emptyUsersAdmin.style.display = 'none';
             for (const u of list) {
               const created = u.createdAt ? new Date(u.createdAt).toLocaleString() : '—';
               const tr = document.createElement('tr');

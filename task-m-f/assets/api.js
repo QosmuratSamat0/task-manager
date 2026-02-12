@@ -86,7 +86,6 @@ window.TM_API = (function () {
     createTask,
     listAllTasks,
     listTasksByUser,
-    listTasksByCategory,
     getTaskById,
     deleteTaskById,
     updateTask,
@@ -96,10 +95,7 @@ window.TM_API = (function () {
     updateProject,
     deleteProject,
     listCategories,
-    getCategory,
-    createCategory,
-    updateCategory,
-    deleteCategory,
+
     getStats,
   };
 })();

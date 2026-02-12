@@ -130,7 +130,6 @@ async function deleteTask(req, res) {
 async function getTasksByUser(req, res) {
   const userId = req.params.userId;
   const tasks = await Task.find({ user: userId })
-    .populate('category', 'name color')
     .populate('project', 'name')
     .populate('user', 'userName')
     .sort({ createdAt: -1 });
