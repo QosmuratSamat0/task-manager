@@ -275,7 +275,7 @@
             // Task Status Distribution
             const statusHtml = stats.tasksByStatus.map(s => `
               <div class="d-flex justify-content-between mb-2">
-                <span>${s._id || 'unknown'}</span>
+                <span>${s._id || s.id || 'unknown'}</span>
                 <span class="badge text-bg-info">${s.count}</span>
               </div>
             `).join('');
@@ -284,7 +284,7 @@
             // Task Priority Distribution
             const priorityHtml = stats.tasksByPriority.map(p => `
               <div class="d-flex justify-content-between mb-2">
-                <span>${p._id || 'unknown'}</span>
+                <span>${p._id || p.id || 'unknown'}</span>
                 <span class="badge text-bg-info">${p.count}</span>
               </div>
             `).join('');
@@ -361,8 +361,8 @@
                 <td class="text-muted">${p.description || ''}</td>
                 <td><small>${created}</small></td>
                 <td>
-                  <button class="btn btn-sm btn-outline-primary me-1" onclick="editProject('${p._id}', ${JSON.stringify(p).replace(/'/g, '&apos;')})">Edit</button>
-                  <button class="btn btn-sm btn-outline-danger" onclick="deleteProject('${p._id}')">Delete</button>
+                  <button class="btn btn-sm btn-outline-primary me-1" onclick="editProject('${p.id || p._id}', ${JSON.stringify(p).replace(/'/g, '&apos;')})">Edit</button>
+                  <button class="btn btn-sm btn-outline-danger" onclick="deleteProject('${p.id || p._id}')">Delete</button>
                 </td>
               `;
               projectRows.appendChild(tr);

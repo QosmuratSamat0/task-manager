@@ -39,6 +39,10 @@ async function getTaskById(req, res) {
   return res.json({ data: toTaskResponse(task) });
 }
 
+function isValidObjectId(id) {
+  return /^[0-9a-fA-F]{24}$/.test(id);
+}
+
 async function createTask(req, res) {
   const projectId = req.body.project_id || req.body.project || null;
   const userId = req.body.user_id || req.body.userId || null;
@@ -46,15 +50,19 @@ async function createTask(req, res) {
   if (!userId) {
     return res.status(400).json({ error: 'user_id is required' });
   }
+  if (!isValidObjectId(userId)) {
+    return res.status(400).json({ error: 'Invalid user_id format' });
+  }
 
   const user = await User.findById(userId);
   if (!user) {
     return res.status(400).json({ error: 'Invalid user id' });
   }
 
-  if (!projectId) {
-    // Project is optional for legacy frontend
-  } else {
+  if (projectId) {
+    if (!isValidObjectId(projectId)) {
+      return res.status(400).json({ error: 'Invalid project id format' });
+    }
     const project = await Project.findById(projectId);
     if (!project) {
       return res.status(400).json({ error: 'Invalid project id' });
@@ -69,7 +77,7 @@ async function createTask(req, res) {
     deadline: req.body.deadline,
     user: userId,
     project: projectId || undefined,
-    category: req.body.category || req.body.category_id || undefined,
+    category: req.body.category || req.body.category_id || '',
   });
 
   return res.status(201).json({ data: toTaskResponse(task) });
@@ -120,6 +128,9 @@ async function updateTask(req, res) {
 }
 
 async function deleteTask(req, res) {
+  if (!isValidObjectId(req.params.id)) {
+    return res.status(400).json({ error: 'Invalid task id format' });
+  }
   const task = await Task.findByIdAndDelete(req.params.id);
   if (!task) {
     return res.status(404).json({ error: 'Task not found' });
@@ -129,6 +140,9 @@ async function deleteTask(req, res) {
 
 async function getTasksByUser(req, res) {
   const userId = req.params.userId;
+  if (!isValidObjectId(userId)) {
+    return res.status(400).json({ error: 'Invalid user id format' });
+  }
   const tasks = await Task.find({ user: userId })
     .populate('project', 'name')
     .populate('user', 'userName')
